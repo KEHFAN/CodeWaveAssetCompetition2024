@@ -1,4 +1,4 @@
-package com.netease.extension.excel;
+package com.netease.lowcode.extension.excel;
 
 public class ExcelParseException extends RuntimeException {
     public ExcelParseException(String msg) {
