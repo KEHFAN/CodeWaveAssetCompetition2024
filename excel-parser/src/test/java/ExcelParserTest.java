@@ -1,4 +1,4 @@
-import com.netease.lowcode.extension.excel.ExcelParser;
+import com.netease.extension.excel.ExcelParser;
 
 public class ExcelParserTest {
 

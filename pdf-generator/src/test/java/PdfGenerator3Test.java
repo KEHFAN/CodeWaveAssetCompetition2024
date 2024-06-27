@@ -1,4 +1,4 @@
-import com.netease.lowcode.extension.PdfGenerator;
+import com.netease.extension.PdfGenerator;
 
 import java.io.FileNotFoundException;
 
