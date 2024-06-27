@@ -1,6 +1,6 @@
 import com.alibaba.fastjson2.JSON;
-import com.netease.low.extension.PdfGenerator;
-import com.netease.low.extension.structures.CreateByTemplateRequest;
+import com.netease.lowcode.extension.PdfGenerator;
+import com.netease.lowcode.extension.structures.CreateByTemplateRequest;
 
 import java.util.HashMap;
 import java.util.Map;
