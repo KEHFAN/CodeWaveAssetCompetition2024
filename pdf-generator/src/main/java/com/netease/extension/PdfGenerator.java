@@ -102,7 +102,15 @@ public class PdfGenerator {
 
             return BaseResponse.OK("","");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
+        }
+    }
+
+    public static BaseResponse createPDFByFreemarker() {
+        try{
+            return BaseResponse.OK("","");
+        }catch (Exception e){
+            return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }
     }
 
