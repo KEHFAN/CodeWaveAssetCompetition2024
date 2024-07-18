@@ -22,7 +22,7 @@ public class Command {
     }
 
     private static CommandLine parseCmd(List<String> cmdList) {
-        String cmd = CmdConst.PREFIX + String.join(" ; ", cmdList);
+        String cmd = CmdConst.PREFIX + String.join(CmdConst.SEPARATOR, cmdList);
         System.out.println("执行命令: " + cmd);
         return CommandLine.parse(cmd);
     }

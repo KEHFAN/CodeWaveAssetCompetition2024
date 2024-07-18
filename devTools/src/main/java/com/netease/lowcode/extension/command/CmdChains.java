@@ -1,17 +1,16 @@
 package com.netease.lowcode.extension.command;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class CmdChains {
 
-    public static final List<String> LS_HOME = Arrays.asList(CmdConst.CD("~"), CmdConst.LS);
-    public static final List<String> LS_BIZ = Arrays.asList(CmdConst.CD("~/logs/biz"), CmdConst.LS);
-    public static final List<String> LS_ORIGIN = Arrays.asList(CmdConst.CD("~/logs/biz/origin"), CmdConst.LS);
+    public static final List<String> LS_HOME = Collections.singletonList(CmdConst.LS("~"));
+    public static final List<String> LS_BIZ = Collections.singletonList(CmdConst.LS("~/logs/biz"));
+    public static final List<String> LS_ORIGIN = Collections.singletonList(CmdConst.LS("~/logs/biz/origin"));
 
     public static List<String> LS(String dir) {
-        return Arrays.asList(CmdConst.CD(dir), CmdConst.LS);
+        return Collections.singletonList(CmdConst.LS(dir));
     }
 
     public static List<String> CAT_FIRST(String filename, Integer num) {
@@ -29,7 +28,7 @@ public class CmdChains {
      * @return
      */
     public static List<String> CAT_NATIVE_LOG_FIRST(Integer num) {
-        return Arrays.asList(CmdConst.CD("~/logs/biz/origin"), CmdConst.CAT("native.log",
+        return Collections.singletonList(CmdConst.CAT("~/logs/biz/origin/native.log",
                 "|", "Select", "-First", String.valueOf(num)));
     }
 
@@ -40,7 +39,7 @@ public class CmdChains {
      * @return
      */
     public static final List<String> CAT_NATIVE_LOG_LAST(Integer num) {
-        return Arrays.asList(CmdConst.CD("~/logs/biz/origin"), CmdConst.CAT("native.log",
+        return Collections.singletonList(CmdConst.CAT("~/logs/biz/origin/native.log",
                 "|", "Select", "-Last", String.valueOf(num)));
     }
 }
