@@ -21,4 +21,14 @@ public class Main {
         return "";
     }
 
+    @NaslLogic
+    public static String cat(String filename, Integer num) {
+        if (num > 0) {
+            Command.exec(CmdChains.CAT_FIRST(filename, num));
+        } else {
+            Command.exec(CmdChains.CAT_LAST(filename, Math.abs(num)));
+        }
+        return "";
+    }
+
 }

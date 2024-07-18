@@ -33,6 +33,14 @@ public class CmdConst {
         return sb.toString();
     }
 
+    public static String HEAD(String filename, Integer num) {
+        return String.join(" ", "head", filename, "-n", String.valueOf(num));
+    }
+
+    public static String TAIL(String filename, Integer num) {
+        return String.join(" ", "tail", filename, "-n", String.valueOf(num));
+    }
+
     public static final String JAVA_VERSION = "java -version";
     public static final String JPS = "jps";
 }

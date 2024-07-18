@@ -1,5 +1,7 @@
 package com.netease.lowcode.extension.command;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -14,11 +16,15 @@ public class CmdChains {
     }
 
     public static List<String> CAT_FIRST(String filename, Integer num) {
-        return Collections.singletonList(CmdConst.CAT(filename, "|", "Select", "-First", String.valueOf(num)));
+        String window = CmdConst.CAT(filename, "|", "Select", "-First", String.valueOf(num));
+        String linux = CmdConst.HEAD(filename, num);
+        return Collections.singletonList(SystemUtils.IS_OS_WINDOWS ? window : linux);
     }
 
     public static List<String> CAT_LAST(String filename, Integer num) {
-        return Collections.singletonList(CmdConst.CAT(filename, "|", "Select", "-Last", String.valueOf(num)));
+        String window = CmdConst.CAT(filename, "|", "Select", "-Last", String.valueOf(num));
+        String linux = CmdConst.TAIL(filename, num);
+        return Collections.singletonList(SystemUtils.IS_OS_WINDOWS ? window : linux);
     }
 
     /**
@@ -28,8 +34,7 @@ public class CmdChains {
      * @return
      */
     public static List<String> CAT_NATIVE_LOG_FIRST(Integer num) {
-        return Collections.singletonList(CmdConst.CAT("~/logs/biz/origin/native.log",
-                "|", "Select", "-First", String.valueOf(num)));
+        return CAT_FIRST("~/logs/biz/origin/native.log", num);
     }
 
     /**
@@ -39,7 +44,6 @@ public class CmdChains {
      * @return
      */
     public static final List<String> CAT_NATIVE_LOG_LAST(Integer num) {
-        return Collections.singletonList(CmdConst.CAT("~/logs/biz/origin/native.log",
-                "|", "Select", "-Last", String.valueOf(num)));
+        return CAT_LAST("~/logs/biz/origin/native.log",num);
     }
 }
