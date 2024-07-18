@@ -6,7 +6,7 @@
 
     <groupId>com.netease.lowcode.extension</groupId>
     <artifactId>devTools</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.2</version>
     <description>制品开发工具集</description>
 
     <properties>
@@ -38,6 +38,31 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <artifactId>nasl-metadata-collector</artifactId>
+            <groupId>com.netease.lowcode</groupId>
+            <version>0.8.0</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.netease.lowcode</groupId>
+                <artifactId>nasl-metadata-maven-plugin</artifactId>
+                <version>1.4.2</version>
+                <configuration>
+                    <jarWithDependencies>false</jarWithDependencies>
+                    <rewriteVersion>false</rewriteVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>archive</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
