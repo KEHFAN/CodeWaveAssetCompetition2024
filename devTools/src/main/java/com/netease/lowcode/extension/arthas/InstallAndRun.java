@@ -1,19 +1,28 @@
 package com.netease.lowcode.extension.arthas;
 
 import com.netease.lowcode.core.annotation.NaslLogic;
-import org.springframework.util.ResourceUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class InstallAndRun {
 
     @NaslLogic
-    public static String start() {
+    public static String copy2() {
         try {
-            File file = new File(ResourceUtils.getURL("classpath:arthas-bin.zip").getFile());
-            return file.getAbsolutePath();
-        } catch (FileNotFoundException e) {
+            InputStream inputStream = InstallAndRun.class.getClassLoader().getResourceAsStream("arthas-bin.zip");
+            File targetFile = new File("/", "arthas-bin.zip");
+
+            if (targetFile.exists()) {
+                targetFile.delete();
+            }
+
+            FileUtils.copyToFile(inputStream, targetFile);
+            inputStream.close();
+            return "";
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
