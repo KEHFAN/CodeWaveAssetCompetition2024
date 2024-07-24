@@ -22,6 +22,13 @@ public class LogController {
         return reader.lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
+    /**
+     * 查看native日志
+     * /rest/query/native?num=5
+     *
+     * @param num
+     * @param response
+     */
     @GetMapping("/rest/query/native")
     public void queryNativeLog(Integer num, HttpServletResponse response) {
 
