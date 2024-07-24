@@ -3,11 +3,12 @@ package logs.parse;
 import com.netease.lowcode.extension.logs.parse.NativeLogParse;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+
 public class NativeLogParseTest {
 
     @Test
     public void parseStringTest() {
-        System.out.println("hello");
 
         String str = "[2024-07-18T11:22:05.939] [ERROR] [4a06c78e-922e-4015-9f6b-7d1ece578ef6] [http-nio-8080-exec-6] [com.cstest.logs.web.interceptor.GlobalExceptionHandler:98] [handleException] 执行错误\n" +
                 "java.lang.ArithmeticException: Division by zero\n" +
@@ -224,7 +225,12 @@ public class NativeLogParseTest {
                 "        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-9.0.37.jar:9.0.37]\n" +
                 "        at java.lang.Thread.run(Thread.java:750) ~[?:1.8.0_322]";
 
-        NativeLogParse.parseString(str);
+        NativeLogParse.parseString(str, new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+
+            }
+        });
     }
 
 }

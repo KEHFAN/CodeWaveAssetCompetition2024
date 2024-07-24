@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
@@ -17,13 +18,11 @@ public class NativeLogParse {
      *
      * @param log
      */
-    public static void parseString(String log) {
+    public static void parseString(String log, Consumer<String> consumer) {
         if(StringUtils.isBlank(log)){
             // 日志文件为空
             return;
         }
-        String tenantId = "cstest";
-        String appId = "logs";
 
         // 传入的日志格式最好不要修改
         // 按照 换行切分
@@ -38,23 +37,21 @@ public class NativeLogParse {
                 System.out.println(row);
             }
 
-            if(Pattern.matches(".*java\\.lang\\..*Exception:.*",row)){
+            if (Pattern.matches(".*\\..*Exception:.*", row)) {
 
                 // 解析异常类型，以及异常msg
                 System.out.println(row);
             }
 
             // at com.cstest.logs.service.logics.Logic1CustomizeService.logic1(Logic1CustomizeService.java:15) ~[classes/:?]
-            if (Pattern.matches(String.format(".*at com\\.%s\\.%s\\.service\\.logics\\..*CustomizeService\\..*\\(.*CustomizeService\\.java:.*",
-                    tenantId, appId), row)) {
+            if (Pattern.matches(".*at com\\..*\\..*\\.service\\.logics\\..*CustomizeService\\..*\\(.*CustomizeService\\.java:.*", row)) {
 
                 // 解析报错的逻辑
                 System.out.println(row);
             }
 
             // at com.cstest.logs.web.controller.logics.Logic1CustomizeController.logic1(Logic1CustomizeController.java:18) ~[classes/:?]
-            if (Pattern.matches(String.format(".*at com\\.%s\\.%s\\.web\\.controller\\.logics\\..*CustomizeController\\..*\\(.*CustomizeController\\.java:.*",
-                    tenantId, appId), row)) {
+            if (Pattern.matches(".*at com\\..*\\..*\\.web\\.controller\\.logics\\..*CustomizeController\\..*\\(.*CustomizeController\\.java:.*", row)) {
 
                 // 解析报错逻辑
                 System.out.println(row);

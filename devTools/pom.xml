@@ -6,7 +6,7 @@
 
     <groupId>com.netease.lowcode.extension</groupId>
     <artifactId>devTools</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20</version>
     <description><![CDATA[
 制品开发工具集，生产环境如不需要请移除后发布。
 支持功能如下：
