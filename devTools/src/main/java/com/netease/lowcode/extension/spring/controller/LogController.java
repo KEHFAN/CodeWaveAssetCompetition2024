@@ -1,14 +1,50 @@
 package com.netease.lowcode.extension.spring.controller;
 
+import com.netease.lowcode.extension.arthas.InstallAndRun;
+import com.netease.lowcode.extension.command.CmdChains;
+import com.netease.lowcode.extension.command.Command;
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class LogController {
 
     @GetMapping("/rest/test")
     public String test() {
-        return "hello";
+        InputStream inputStream = InstallAndRun.class.getClassLoader().getResourceAsStream("log.html");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    @GetMapping("/rest/query/native")
+    public void queryNativeLog(Integer num, HttpServletResponse response) {
+
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.setCharacterEncoding("utf-8");
+
+        RestExecStreamHandler handler = new RestExecStreamHandler() {
+            @Override
+            public void setProcessErrorStream(InputStream inputStream) throws IOException {
+                IOUtils.copy(inputStream, response.getOutputStream());
+            }
+
+            @Override
+            public void setProcessOutputStream(InputStream inputStream) throws IOException {
+                IOUtils.copy(inputStream, response.getOutputStream());
+            }
+        };
+
+        if (num > 0) {
+            Command.exec(CmdChains.CAT_NATIVE_LOG_LAST(num), handler);
+        } else {
+            Command.exec(CmdChains.CAT_NATIVE_LOG_FIRST(Math.abs(num)), handler);
+        }
     }
 
 }

@@ -7,6 +7,8 @@ import java.util.List;
 
 public class CmdChains {
 
+    public static final String HOME = System.getProperty("user.home");
+
     public static final List<String> LS_HOME = Collections.singletonList(CmdConst.LS("~"));
     public static final List<String> LS_BIZ = Collections.singletonList(CmdConst.LS("~/logs/biz"));
     public static final List<String> LS_ORIGIN = Collections.singletonList(CmdConst.LS("~/logs/biz/origin"));
@@ -34,7 +36,7 @@ public class CmdChains {
      * @return
      */
     public static List<String> CAT_NATIVE_LOG_FIRST(Integer num) {
-        return CAT_FIRST("~/logs/biz/origin/native.log", num);
+        return CAT_FIRST(HOME + "/logs/biz/origin/native.log", num);
     }
 
     /**
@@ -44,6 +46,6 @@ public class CmdChains {
      * @return
      */
     public static final List<String> CAT_NATIVE_LOG_LAST(Integer num) {
-        return CAT_LAST("~/logs/biz/origin/native.log",num);
+        return CAT_LAST(HOME + "/logs/biz/origin/native.log", num);
     }
 }
