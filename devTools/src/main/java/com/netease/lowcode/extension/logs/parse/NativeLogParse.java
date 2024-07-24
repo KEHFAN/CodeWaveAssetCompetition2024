@@ -56,6 +56,11 @@ public class NativeLogParse {
                 // 解析报错逻辑
                 System.out.println(row);
             }
+
+            // at com.defaulttenant.v306sms.web.controller.rest.GetGoodsInfoController.getGoodsInfo(GetGoodsInfoController.java:45) ~[classes!/:1.0-SNAPSHOT]
+            if (Pattern.matches(".*at com\\..*\\..*\\.web\\.controller\\.rest\\..*Controller\\..*\\(.*Controller\\.java:.*", row)) {
+                System.out.println(row);
+            }
         }
 
         // 根据第一个报错，启动arthas stack
