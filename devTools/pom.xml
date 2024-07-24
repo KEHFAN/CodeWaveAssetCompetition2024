@@ -7,7 +7,11 @@
     <groupId>com.netease.lowcode.extension</groupId>
     <artifactId>devTools</artifactId>
     <version>1.0.19</version>
-    <description>制品开发工具集，生产环境如不需要请移除后发布</description>
+    <description><![CDATA[
+制品开发工具集，生产环境如不需要请移除后发布。
+支持功能如下：
+1. [应用域名]/rest/query/native?num=10 查看末尾10行日志，如果为负数表示从开头查看。
+]]></description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
