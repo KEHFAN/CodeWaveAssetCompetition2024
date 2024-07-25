@@ -37,6 +37,7 @@ public class NativeLogParse {
             for (LogMatchEnum value : LogMatchEnum.values()) {
                 if (value.match(row)) {
                     sb.append(row).append("\n");
+                    break;
                 }
             }
         }
