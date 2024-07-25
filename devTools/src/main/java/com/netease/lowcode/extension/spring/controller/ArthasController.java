@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -98,12 +99,6 @@ public class ArthasController {
         // 删除 解压的 目录。
     }
 
-    // trace - 方法内部调用路径，并输出方法路径上的每个节点上耗时
-    @GetMapping("/rest/trace")
-    public void trace(HttpServletResponse response) {
-
-    }
-
     @GetMapping("/rest/version")
     public void version(HttpServletResponse response) throws IOException {
 
@@ -111,6 +106,68 @@ public class ArthasController {
         jsonObject.put("action", "exec");
         jsonObject.put("command", "version");
 
+        post(response, jsonObject);
+    }
+
+    // 默认10分钟自动终端、自动关闭会话，如需手动，需要显示设置参数autoClose=false
+    @GetMapping("/rest/session/init")
+    public void initSession(@RequestParam(defaultValue = "true") Boolean autoClose, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "init_session");
+
+        post(response, jsonObject);
+    }
+
+    @GetMapping("/rest/session/close")
+    public void closeSession(String sessionId, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "close_session");
+        jsonObject.put("sessionId", sessionId);
+
+        post(response, jsonObject);
+    }
+
+    @GetMapping("/rest/session/query")
+    public void queryResult(String sessionId, String consumerId, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "pull_results");
+        jsonObject.put("sessionId", sessionId);
+        jsonObject.put("consumerId", consumerId);
+
+        post(response, jsonObject);
+    }
+
+    @GetMapping("/rest/session/interrupt")
+    public void interruptExec(String sessionId, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "interrupt_job");
+        jsonObject.put("sessionId", sessionId);
+
+        post(response, jsonObject);
+    }
+
+    // trace - 方法内部调用路径，并输出方法路径上的每个节点上耗时
+    @GetMapping("/rest/session/trace")
+    public void trace(String sessionId,HttpServletResponse response) throws IOException {
+        asyncExec(sessionId,"",response);
+    }
+
+    // sc -E .*Logic1.* 查询类信息
+    @GetMapping("/rest/session/sc")
+    public void sc(String sessionId, String logicName, HttpServletResponse response) throws IOException {
+        asyncExec(sessionId, "sc -E .*" + logicName + ".*", response);
+    }
+
+    private void asyncExec(String sessionId, String command, HttpServletResponse response) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "async_exec");
+        jsonObject.put("sessionId", sessionId);
+        jsonObject.put("command", command);
+
+        post(response, jsonObject);
+    }
+
+    private static void post(HttpServletResponse response, JSONObject jsonObject) throws IOException {
         HttpUtil.doPost("http://localhost:8563/api", jsonObject.toString(), body -> {
             try (PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8), true)) {
                 out.write(body);
