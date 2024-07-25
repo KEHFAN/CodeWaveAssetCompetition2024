@@ -152,7 +152,7 @@ public class ArthasController {
         asyncExec(sessionId,"",response);
     }
 
-    // sc -E .*Logic1.* 查询类信息
+    // sc -E .*Logic1.* 查询类信息 如果是逻辑名 注意首字母大写
     @GetMapping("/rest/session/sc")
     public void sc(String sessionId, String logicName, HttpServletResponse response) throws IOException {
         asyncExec(sessionId, "sc -E .*" + logicName + ".*", response);
