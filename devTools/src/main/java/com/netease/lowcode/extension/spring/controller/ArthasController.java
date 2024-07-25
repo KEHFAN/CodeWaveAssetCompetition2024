@@ -1,7 +1,8 @@
 package com.netease.lowcode.extension.spring.controller;
 
-import com.netease.lowcode.extension.command.CmdChains;
+import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.command.Command;
+import com.netease.lowcode.extension.utils.HttpUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -21,6 +23,10 @@ public class ArthasController {
     /**
      * 启动arthas服务
      * 启动后使用httpapi交互 https://arthas.aliyun.com/doc/http-api.html
+     *
+     * [1] 执行 /rest/start
+     * [2] 执行 /rest/start?pid=xxx
+     * [3] 执行 /rest/start
      *
      * @param response
      */
@@ -96,6 +102,22 @@ public class ArthasController {
     @GetMapping("/rest/trace")
     public void trace(HttpServletResponse response) {
 
+    }
+
+    @GetMapping("/rest/version")
+    public void version(HttpServletResponse response) throws IOException {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("action", "exec");
+        jsonObject.put("command", "version");
+
+        HttpUtil.doPost("http://localhost:8563/api", jsonObject.toString(), body -> {
+            try (PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8), true)) {
+                out.write(body);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }
