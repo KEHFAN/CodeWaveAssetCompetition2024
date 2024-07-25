@@ -10,13 +10,46 @@ public class NativeLogParseTest {
     @Test
     public void parseStringTest() {
 
-        NativeLogParse.parseString(str2, new Consumer<String>() {
+        NativeLogParse.parseString(str, new Consumer<String>() {
             @Override
             public void accept(String s) {
-
+                System.out.println(s);
             }
         });
     }
+
+    String str4 = "[2024-07-25T14:13:21.017] [INFO] [] [N1A050E0_Worker-17] [com.kehfan.devtools.timing.TaskCustomizeJob:29] [execute] job执行异常\n" +
+            "java.lang.ArithmeticException: Division by zero\n" +
+            "\tat java.math.BigDecimal.divide(BigDecimal.java:1745) ~[?:1.8.0_322]\n" +
+            "\tat com.kehfan.devtools.service.logics.TaskCustomizeService.task(TaskCustomizeService.java:22) ~[classes/:?]\n" +
+            "\tat com.kehfan.devtools.service.logics.TaskCustomizeService$$FastClassBySpringCGLIB$$f6fddacb.invoke(<generated>) ~[classes/:?]\n" +
+            "\tat org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:771) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoint.java:88) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat com.kehfan.devtools.web.interceptor.ServiceLoggingAspect.logAround(ServiceLoggingAspect.java:60) ~[classes/:?]\n" +
+            "\tat sun.reflect.GeneratedMethodAccessor83.invoke(Unknown Source) ~[?:?]\n" +
+            "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_322]\n" +
+            "\tat java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_322]\n" +
+            "\tat org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:644) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:633) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:70) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:95) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691) ~[spring-aop-5.2.8.RELEASE.jar:5.2.8.RELEASE]\n" +
+            "\tat com.kehfan.devtools.service.logics.TaskCustomizeService$$EnhancerBySpringCGLIB$$93753aec.task(<generated>) ~[classes/:?]\n" +
+            "\tat com.kehfan.devtools.timing.TaskCustomizeJob.execute(TaskCustomizeJob.java:27) ~[classes/:?]\n" +
+            "\tat org.quartz.core.JobRunShell.run(JobRunShell.java:202) ~[quartz-2.3.2.jar:?]\n" +
+            "\tat org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:573) ~[quartz-2.3.2.jar:?]";
+
+    String str3 = "org.quartz.JobExecutionException: null\n" +
+            "\tat com.defaulttenant.saastrade.timing.MarketingManagementChangeStatusCustomizeJob.execute(MarketingManagementChangeStatusCustomizeJob.java:58) ~[classes!/:1.0-SNAPSHOT]\n" +
+            "\tat org.quartz.core.JobRunShell.run(JobRunShell.java:202) ~[quartz-2.3.2.jar!/:?]\n" +
+            "\tat org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:573) ~[quartz-2.3.2.jar!/:?]";
 
     String str2 = "\tat org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868) ~[tomcat-embed-core-9.0.37.jar!/:9.0.37]\n" +
             "\tat org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1589) ~[tomcat-embed-core-9.0.37.jar!/:9.0.37]\n" +
