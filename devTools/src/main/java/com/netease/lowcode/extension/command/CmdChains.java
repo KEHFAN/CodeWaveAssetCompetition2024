@@ -2,6 +2,7 @@ package com.netease.lowcode.extension.command;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,5 +48,9 @@ public class CmdChains {
      */
     public static final List<String> CAT_NATIVE_LOG_LAST(Integer num) {
         return CAT_LAST(HOME + "/logs/biz/origin/native.log", num);
+    }
+
+    public static final List<String> START_ARTHAS() {
+        return Collections.singletonList("java -jar /arthas-bin/arthas-boot.jar");
     }
 }

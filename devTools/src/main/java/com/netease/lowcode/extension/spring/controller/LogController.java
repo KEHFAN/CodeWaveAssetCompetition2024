@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RestController
