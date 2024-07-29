@@ -259,6 +259,14 @@
     {
       "type": "Paragraph",
       "text": "2.委托方披露给受托方或受托方通过双方合作关系主动获悉的任何以及所有以口头或书面，或以其他任何形式披露的信息、资料或数据，包括但不限于产品信息、产品所含知识产权、产品测试内容及测试结果等各类基于甲方商业经营以及测试合作产生的，具有商业价值或涉及第三方个人隐私的内容予以保密，均不得主动向第三人披露。"
+    },
+    {
+      "type": "Image",
+      "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
+      "base64": "${image}",
+      "fitWidth": 100,
+      "fitHeight": 100,
+      "opacity": 0.5
     }
   ]
 }

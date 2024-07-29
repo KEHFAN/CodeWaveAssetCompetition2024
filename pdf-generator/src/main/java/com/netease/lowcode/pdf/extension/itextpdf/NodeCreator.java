@@ -18,6 +18,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.netease.lowcode.pdf.extension.structures.NodeTypeEnum;
 import org.apache.commons.lang3.SerializationUtils;
+import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -258,7 +259,13 @@ public class NodeCreator {
 
     public static Image image(JSONObject jsonObject) {
         try {
-            Image image = new Image(ImageDataFactory.create(jsonObject.getString("fileName")));
+            BASE64Decoder decoder = new BASE64Decoder();
+            String base64 = jsonObject.getString("base64");
+            if (base64.contains("base64,")) {
+                base64 = base64.substring(base64.indexOf("base64,") + 7);
+            }
+            byte[] bytes = decoder.decodeBuffer(base64);
+            Image image = new Image(ImageDataFactory.create(bytes));
             float fitWidth = 100, fitHeight = 100;
             if (jsonObject.containsKey("fitWidth")) {
                 fitWidth = jsonObject.getFloat("fitWidth");
@@ -278,7 +285,7 @@ public class NodeCreator {
                 image.setOpacity(jsonObject.getFloat("opacity"));
             }
             return image;
-        } catch (MalformedURLException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

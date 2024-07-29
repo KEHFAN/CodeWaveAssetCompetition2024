@@ -340,6 +340,7 @@
           {"type": "Paragraph", "text": "委托方代表签名："}]},
         {"width": 50,"elements": [
           {"type": "Image","fileName": "pdf-generator/src/main/resources/netease_logo2.png",
+            "base64": "",
             "fitWidth": 150,
             "fitHeight": 100,
             "opacity": 0.5}
