@@ -1,0 +1,300 @@
+{
+  "fileName": "result.pdf",
+  "font": {
+    "fontProgram": "STSong-Light",
+    "encoding": "UniGB-UCS2-H"
+  },
+  "fontSize": 7,
+  "pageSize": "A4",
+  "rotate": false,
+  "marginLeft": 36,
+  "marginRight": 36,
+  "marginTop": 36,
+  "marginBottom": 36,
+  "nodes": [
+    {
+      "type": "Paragraph",
+      "text": "测试申请书-通用",
+      "bold": true,
+      "textAlignment": "CENTER",
+      "fontSize": 21
+    },
+    {
+      "type": "Paragraph",
+      "text": "1.基础信息"
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 4,
+      "cells": [
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "委托单位"}]},{"width": 40, "elements": [{"type": "Paragraph", "text": "网易"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "委托单位地址"}]},{"width": 40, "elements": [{"type": "Paragraph", "text": "杭州滨江"}]},
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "付款单位"}]},{"width": 40, "elements": [{"type": "Paragraph", "text": "白贝壳"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "付款单位地址"}]},{"width": 40, "elements": [{"type": "Paragraph", "text": "上峰"}]}
+      ]
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 6,
+      "cells": [
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "小李"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电话"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "12345678901"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电子邮箱"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]},
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "SPU型号"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "SPU名称"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "品牌"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]},
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "样品量"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "批次号"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "快递单号"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]}
+      ]
+    },
+    {
+      "type": "Paragraph",
+      "text": "2.测试需求"
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "chunkSize": 2,
+      "chunkVertical": true,
+      "columnSize": 3,
+      "cells": [
+        {"width": 4,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "序号"}]},{"width": 23,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "测试项目"}]},{"width": 23,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "测试标准"}]}
+      ,{"width": 4,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "序号"}]},{"width": 23,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "测试项目"}]},{"width": 23,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "测试标准"}]}
+      ,{"width": 4,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "1"}]},{"width": 23,"elements": [{"type": "Paragraph", "text": "婴儿水杯测试"}]},{"width": 23,"elements": [{"type": "Paragraph", "text": "国标111"}]}
+      ,{"width": 4,"textAlignment":"CENTER","elements": [{"type": "Paragraph", "text": "2"}]},{"width": 23,"elements": [{"type": "Paragraph", "text": "婴儿奶瓶测试"}]},{"width": 23,"elements": [{"type": "Paragraph", "text": "国标222"}]}
+      ]
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 1,
+      "cells": [
+        {"width": 100,"elements": [{"type": "Paragraph", "text": "判定依据：按照产品执行标准判定，单项需要确认判定要求。"}]}
+      ,{"width": 100,"elements": [{"type": "Paragraph", "text": "送检备注：硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234硅胶：123 塑料：234"}]}
+      ]
+    },
+    {
+      "type": "Paragraph",
+      "text": "3.其他"
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 1,
+      "cells": [
+        {"width": 100,"elements": [
+          {"type": "Paragraph", "text": "客户要求：1、资质要求： ","elements": [
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "CNAS章",
+              "marginLeft":3,
+              "marginRight": 3
+            },
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },
+            {
+              "type": "Paragraph",
+              "text": "CMA章",
+              "marginLeft":3
+            }]},
+          {"type": "Paragraph", "marginLeft":30,"text": "2、报告语言： ","elements": [
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "中文报告",
+              "marginLeft":3,
+              "marginRight": 3
+            },{
+              "type": "CheckBox",
+              "checked": false,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "英文报告",
+              "marginLeft":3
+            }
+          ]},
+          {"type": "Paragraph", "marginLeft":30,"text": "3、报告出具方式：执行标准一份报告，2C一份报告，只有CMA一份"},
+          {"type": "Paragraph", "marginLeft":30,"text": "4、服务类型：","elements": [
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "普通",
+              "marginLeft":3,
+              "marginRight": 3
+            },{
+              "type": "CheckBox",
+              "checked": false,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "加急",
+              "marginLeft":3
+            }
+          ]},
+          {"type": "Paragraph", "marginLeft":30,"text": "5、是否需要判定：","elements": [
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "需要",
+              "marginLeft":3,
+              "marginRight": 3
+            },{
+              "type": "CheckBox",
+              "checked": false,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "不需要",
+              "marginLeft":3
+            }
+          ]},
+          {"type": "Paragraph", "marginLeft":30,"text": "6、是否需要退样：","elements": [
+            {
+              "type": "CheckBox",
+              "checked": true,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "不需要",
+              "marginLeft":3,
+              "marginRight": 3
+            },{
+              "type": "CheckBox",
+              "checked": false,
+              "checkBoxType": "CROSS",
+              "size": 7,
+              "border": {
+                "width": 1
+              }
+            },{
+              "type": "Paragraph",
+              "text": "需要",
+              "marginLeft":3
+            }, {
+              "type": "Paragraph",
+              "text": "退样信息：",
+              "marginLeft":8
+            },{
+              "type": "LineSeparator",
+              "marginLeft": 1,
+              "width": 10,
+              "lineWidth": 0.5
+            }
+          ]}
+        ]}
+      ]
+    },
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 2,
+      "cells": [
+        {"width": 50,"elements": [
+          {"type": "Paragraph", "text": "委托方代表签名：","elements": [{"type": "Paragraph", "marginLeft":90, "text": "日期："}]}]},
+        {"width": 50,"elements": [
+          {"type": "Paragraph", "text": "受托方代表签名：","elements": [{"type": "Paragraph", "marginLeft":90, "text": "日期："}]}]}
+      ]
+    },
+    {
+      "type": "Paragraph",
+      "text": "测试须知",
+      "bold": true,
+      "textAlignment": "CENTER",
+      "fontSize": 21,
+      "fontColor": "RED"
+    },
+    {
+      "type": "Paragraph",
+      "text": "1. 与我司合作过程中，品控部标准送检组人员为唯一对接窗口，在未获得我司书面授权允许的情况下不得以任何形式与其他人员私自对接，进行样品受理、报告修改等与测试相关的业务，如若发生，将停止后续的一切合作，造成不利影响的我司保留追究相关法律责任的权力。"
+    },
+    {
+      "type": "Paragraph",
+      "text": "2.委托方披露给受托方或受托方通过双方合作关系主动获悉的任何以及所有以口头或书面，或以其他任何形式披露的信息、资料或数据，包括但不限于产品信息、产品所含知识产权、产品测试内容及测试结果等各类基于甲方商业经营以及测试合作产生的，具有商业价值或涉及第三方个人隐私的内容予以保密，均不得主动向第三人披露。"
+    },
+    {
+      "type": "Image",
+      "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
+      "fitWidth": 100,
+      "fitHeight": 100,
+      "opacity": 0.5
+    },
+    {
+      "type": "Paragraph",
+      "textAlignment": "CENTER",
+      "elements": [{
+        "type": "Paragraph",
+        "text": "图片左边"
+      },{
+        "type": "Image",
+        "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
+        "fitWidth": 100,
+        "fitHeight": 100,
+        "opacity": 0.5
+      }]
+    },
+
+    {
+      "type": "Table",
+      "width": 100,
+      "columnSize": 2,
+      "cells": [
+        {"width": 50,"elements": [
+          {"type": "Paragraph", "text": "委托方代表签名："}]},
+        {"width": 50,"elements": [
+          {"type": "Image","fileName": "pdf-generator/src/main/resources/netease_logo2.png",
+            "fitWidth": 150,
+            "fitHeight": 100,
+            "opacity": 0.5}
+        ]}
+      ]
+    }
+  ]
+}

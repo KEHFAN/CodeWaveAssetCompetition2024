@@ -33,7 +33,7 @@ public class NodeCreator {
 
         // 设置纸张大小和方向: 默认纵向,rotate为横向
         PageSize pageSize = PdfUtils.getPageSize(jsonObject.getString("pageSize"));
-        if(jsonObject.containsKey("rotate")){
+        if (jsonObject.containsKey("rotate") && jsonObject.getBoolean("rotate")) {
             pageSize = pageSize.rotate();
         }
         pdfDocument.setDefaultPageSize(pageSize);

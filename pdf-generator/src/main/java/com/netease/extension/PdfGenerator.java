@@ -14,6 +14,7 @@ import com.netease.extension.structures.BaseResponse;
 import com.netease.extension.structures.CreateByTemplateRequest;
 import com.netease.extension.structures.CreateRequest;
 import com.netease.extension.utils.FileUtils;
+import com.netease.extension.utils.FreemarkerUtils;
 import com.netease.extension.utils.UploadResponseDTO;
 import com.netease.lowcode.core.annotation.NaslLogic;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -95,12 +94,22 @@ public class PdfGenerator {
     }
 
     @NaslLogic
-    public static BaseResponse createPDFByJSON() {
+    public static BaseResponse createPDFV2(String jsonData,String templateUrl) {
         try {
-            JSONObject jsonObject = JSONObject.parseObject(PdfUtils.readJson("pdf-generator/src/main/resources/pdf.json"));
+
+            ByteArrayInputStream byteArrayInputStream = FreemarkerUtils.getFreemarkerContentInputStreamV2(jsonData, templateUrl);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(byteArrayInputStream));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JSONObject jsonObject = JSONObject.parseObject(sb.toString());
             NodeCreator.node(jsonObject);
 
-            return BaseResponse.OK("","");
+            return BaseResponse.OK("", "");
         } catch (Exception e) {
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }

@@ -1,0 +1,22 @@
+{
+  "fileName": "result.pdf",
+  "title": "测试申请书-通用",
+  "requestUnit": "网易",
+  "requestAddress": "杭州滨江",
+  "paymentUnit": "白贝壳",
+  "paymentAddress": "上峰",
+  "contactPerson": "小李",
+  "contactPhone": "12345678901",
+  "projectList": [
+    {
+      "sequence": "1",
+      "name": "婴儿水杯测试",
+      "standard": "国标111"
+    },
+    {
+      "sequence": "2",
+      "name": "婴儿奶瓶测试",
+      "standard": "国标222"
+    }
+  ]
+}
