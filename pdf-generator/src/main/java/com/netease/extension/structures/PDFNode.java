@@ -1,5 +1,8 @@
 package com.netease.extension.structures;
 
+import com.netease.lowcode.core.annotation.NaslStructure;
+
+@NaslStructure
 public class PDFNode {
 
     /**
@@ -21,7 +24,7 @@ public class PDFNode {
     /**
      * 是否加粗
      */
-    public Boolean bold;
+    public Boolean bold = false;
     /**
      * 文本内容
      */

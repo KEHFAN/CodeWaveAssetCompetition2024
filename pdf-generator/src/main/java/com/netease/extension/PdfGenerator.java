@@ -13,6 +13,7 @@ import com.netease.extension.itextpdf.PdfUtils;
 import com.netease.extension.structures.BaseResponse;
 import com.netease.extension.structures.CreateByTemplateRequest;
 import com.netease.extension.structures.CreateRequest;
+import com.netease.extension.structures.PDFStructure;
 import com.netease.extension.utils.FileUtils;
 import com.netease.extension.utils.UploadResponseDTO;
 import com.netease.lowcode.core.annotation.NaslLogic;
@@ -94,20 +95,19 @@ public class PdfGenerator {
 
     }
 
+    /**
+     * 创建pdf，支持更丰富的类型
+     *
+     * @param pdfStructure
+     * @return
+     */
     @NaslLogic
-    public static BaseResponse createPDFByJSON() {
-        try {
-            JSONObject jsonObject = JSONObject.parseObject(PdfUtils.readJson("src/main/resources/pdf.json"));
+    public static BaseResponse createPDFV2(PDFStructure pdfStructure) {
+        try{
+
+            JSONObject jsonObject = JSONObject.from(pdfStructure);
             NodeCreator.node(jsonObject);
 
-            return BaseResponse.OK("","");
-        } catch (Exception e) {
-            return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
-        }
-    }
-
-    public static BaseResponse createPDFByFreemarker() {
-        try{
             return BaseResponse.OK("","");
         }catch (Exception e){
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());

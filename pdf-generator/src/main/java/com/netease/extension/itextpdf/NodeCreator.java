@@ -66,6 +66,7 @@ public class NodeCreator {
         JSONArray nodes = jsonObject.getJSONArray("nodes");
 
         if (Objects.isNull(nodes)) {
+            document.close();
             return;
         }
 
