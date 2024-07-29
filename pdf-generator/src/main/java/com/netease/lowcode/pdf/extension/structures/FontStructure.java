@@ -1,4 +1,4 @@
-package com.netease.extension.structures;
+package com.netease.lowcode.pdf.extension.structures;
 
 import com.netease.lowcode.core.annotation.NaslStructure;
 

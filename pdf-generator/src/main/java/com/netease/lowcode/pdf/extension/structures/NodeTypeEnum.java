@@ -1,8 +1,8 @@
-package com.netease.extension.structures;
+package com.netease.lowcode.pdf.extension.structures;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.layout.element.IBlockElement;
-import com.netease.extension.itextpdf.NodeCreator;
+import com.netease.lowcode.pdf.extension.itextpdf.NodeCreator;
 
 public enum NodeTypeEnum {
 

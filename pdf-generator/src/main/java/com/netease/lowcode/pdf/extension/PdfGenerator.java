@@ -1,4 +1,4 @@
-package com.netease.extension;
+package com.netease.lowcode.pdf.extension;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -8,14 +8,13 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
-import com.netease.extension.itextpdf.NodeCreator;
-import com.netease.extension.itextpdf.PdfUtils;
-import com.netease.extension.structures.BaseResponse;
-import com.netease.extension.structures.CreateByTemplateRequest;
-import com.netease.extension.structures.CreateRequest;
-import com.netease.extension.utils.FileUtils;
-import com.netease.extension.utils.FreemarkerUtils;
-import com.netease.extension.utils.UploadResponseDTO;
+import com.netease.lowcode.pdf.extension.itextpdf.NodeCreator;
+import com.netease.lowcode.pdf.extension.structures.BaseResponse;
+import com.netease.lowcode.pdf.extension.structures.CreateByTemplateRequest;
+import com.netease.lowcode.pdf.extension.structures.CreateRequest;
+import com.netease.lowcode.pdf.extension.utils.FileUtils;
+import com.netease.lowcode.pdf.extension.utils.FreemarkerUtils;
+import com.netease.lowcode.pdf.extension.utils.UploadResponseDTO;
 import com.netease.lowcode.core.annotation.NaslLogic;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -94,7 +93,7 @@ public class PdfGenerator {
     }
 
     @NaslLogic
-    public static BaseResponse createPDFV2(String jsonData,String templateUrl) {
+    public static BaseResponse createPDFV2(String jsonData, String templateUrl) {
         try {
 
             ByteArrayInputStream byteArrayInputStream = FreemarkerUtils.getFreemarkerContentInputStreamV2(jsonData, templateUrl);
@@ -107,9 +106,12 @@ public class PdfGenerator {
             }
 
             JSONObject jsonObject = JSONObject.parseObject(sb.toString());
-            NodeCreator.node(jsonObject);
+            ByteArrayOutputStream byteArrayOutputStream = NodeCreator.node(jsonObject);
+            ByteArrayInputStream uploadStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
-            return BaseResponse.OK("", "");
+            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStream(uploadStream, jsonObject.getString("fileName"));
+
+            return BaseResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult());
         } catch (Exception e) {
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }

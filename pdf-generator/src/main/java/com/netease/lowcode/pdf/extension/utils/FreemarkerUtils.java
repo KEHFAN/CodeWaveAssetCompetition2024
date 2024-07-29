@@ -1,4 +1,4 @@
-package com.netease.extension.utils;
+package com.netease.lowcode.pdf.extension.utils;
 
 import com.alibaba.fastjson2.JSON;
 import freemarker.cache.URLTemplateLoader;

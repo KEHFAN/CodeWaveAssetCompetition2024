@@ -1,5 +1,5 @@
-import com.netease.extension.PdfGenerator;
-import com.netease.extension.itextpdf.PdfUtils;
+import com.netease.lowcode.pdf.extension.PdfGenerator;
+import com.netease.lowcode.pdf.extension.itextpdf.PdfUtils;
 
 import java.io.IOException;
 

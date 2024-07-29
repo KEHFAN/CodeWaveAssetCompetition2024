@@ -1,6 +1,6 @@
-import com.netease.extension.PdfGenerator;
-import com.netease.extension.structures.BaseResponse;
-import com.netease.extension.structures.CreateRequest;
+import com.netease.lowcode.pdf.extension.PdfGenerator;
+import com.netease.lowcode.pdf.extension.structures.BaseResponse;
+import com.netease.lowcode.pdf.extension.structures.CreateRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;

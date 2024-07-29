@@ -1,4 +1,4 @@
-package com.netease.extension.utils;
+package com.netease.lowcode.pdf.extension.utils;
 
 public class UploadResponseDTO {
     private int code;

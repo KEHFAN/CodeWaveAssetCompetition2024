@@ -1,5 +1,7 @@
-package com.netease.extension.utils;
+package com.netease.lowcode.pdf.extension.utils;
 
+import com.alibaba.fastjson2.JSON;
+import okhttp3.*;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,6 +88,40 @@ public class FileUtils {
         }
 
         return responseDTO;
+    }
+
+    public static UploadResponseDTO uploadStream(InputStream inputStream, String fileName) throws IOException {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        int port = httpServletRequest.getLocalPort();
+        String uploadUrl = httpServletRequest.getRemoteHost() + "/upload";
+        OkHttpClient client = new OkHttpClient();
+
+        byte[] fileBytes;
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            int read;
+            byte[] data = new byte[1024];
+            while ((read = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, read);
+            }
+            buffer.flush();
+            fileBytes = buffer.toByteArray();
+        }
+        RequestBody requestBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", fileName, requestBody)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(uploadUrl)
+                .post(multipartBody)
+                .build();
+        Call call = client.newCall(request);
+        Response response = call.execute();
+        if (response.isSuccessful()) {
+            return JSON.parseObject(response.body().string(), UploadResponseDTO.class);
+        }
+        throw new RuntimeException(String.format("文件上传失败,%s",response));
     }
 
     public static File downloadFile(String urlStr) throws IOException {

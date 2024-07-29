@@ -1,4 +1,4 @@
-package com.netease.extension.itextpdf;
+package com.netease.lowcode.pdf.extension.itextpdf;
 
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.ColorConstants;

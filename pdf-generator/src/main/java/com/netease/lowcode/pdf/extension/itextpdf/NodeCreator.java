@@ -1,4 +1,4 @@
-package com.netease.extension.itextpdf;
+package com.netease.lowcode.pdf.extension.itextpdf;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -16,9 +16,10 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.netease.extension.structures.NodeTypeEnum;
+import com.netease.lowcode.pdf.extension.structures.NodeTypeEnum;
 import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -26,10 +27,12 @@ import java.util.Objects;
 
 public class NodeCreator {
 
-    public static void node(JSONObject jsonObject) throws IOException {
+    public static ByteArrayOutputStream node(JSONObject jsonObject) throws IOException {
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         String fileName = jsonObject.getString("fileName");
-        PdfDocument pdfDocument = new PdfDocument(new PdfWriter(fileName));
+        PdfDocument pdfDocument = new PdfDocument(new PdfWriter(byteArrayOutputStream));
 
         // 设置纸张大小和方向: 默认纵向,rotate为横向
         PageSize pageSize = PdfUtils.getPageSize(jsonObject.getString("pageSize"));
@@ -67,7 +70,7 @@ public class NodeCreator {
 
         if (Objects.isNull(nodes)) {
             document.close();
-            return;
+            return byteArrayOutputStream;
         }
 
         nodes.toJavaList(JSONObject.class).forEach(nodeObj -> {
@@ -83,6 +86,7 @@ public class NodeCreator {
         });
 
         document.close();
+        return byteArrayOutputStream;
     }
 
     public static Paragraph paragraph(JSONObject jsonObject) {

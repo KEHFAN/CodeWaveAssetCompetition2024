@@ -1,4 +1,4 @@
-package com.netease.extension.itextpdf;
+package com.netease.lowcode.pdf.extension.itextpdf;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.kernel.colors.ColorConstants;
