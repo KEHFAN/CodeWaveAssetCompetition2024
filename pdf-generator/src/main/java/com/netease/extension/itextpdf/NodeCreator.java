@@ -102,7 +102,7 @@ public class NodeCreator {
         if(jsonObject.containsKey("fontSize")){
             paragraph.setFontSize(jsonObject.getInteger("fontSize"));
         }
-        if(jsonObject.containsKey("bold")){
+        if (jsonObject.containsKey("bold") && jsonObject.getBoolean("bold")) {
             paragraph.setBold();
         }
         if(jsonObject.containsKey("underline")){

@@ -29,7 +29,7 @@
     "marginTop": 50,
     "textAlignment": "LEFT",
     "image": {
-      "fileName": "src/main/resources/netease_logo2.png",
+      "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
       "fitWidth": 100,
       "fitHeight": 100,
       "marginLeft": 0,
@@ -311,7 +311,7 @@
     },
     {
       "type": "Image",
-      "fileName": "src/main/resources/netease_logo2.png",
+      "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
       "fitWidth": 100,
       "fitHeight": 100,
       "opacity": 0.5
@@ -324,15 +324,13 @@
         "text": "图片左边"
       },{
         "type": "Image",
-        "fileName": "src/main/resources/netease_logo2.png",
+        "fileName": "pdf-generator/src/main/resources/netease_logo2.png",
         "fitWidth": 100,
         "fitHeight": 100,
         "opacity": 0.5
       }]
     },
-    {
-      "type": "AreaBreak"
-    },
+
     {
       "type": "Table",
       "width": 100,
@@ -341,7 +339,7 @@
         {"width": 50,"elements": [
           {"type": "Paragraph", "text": "委托方代表签名："}]},
         {"width": 50,"elements": [
-          {"type": "Image","fileName": "src/main/resources/netease_logo2.png",
+          {"type": "Image","fileName": "pdf-generator/src/main/resources/netease_logo2.png",
             "fitWidth": 150,
             "fitHeight": 100,
             "opacity": 0.5}
