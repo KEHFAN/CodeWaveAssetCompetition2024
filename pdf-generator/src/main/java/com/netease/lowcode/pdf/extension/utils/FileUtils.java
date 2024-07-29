@@ -92,8 +92,8 @@ public class FileUtils {
 
     public static UploadResponseDTO uploadStream(InputStream inputStream, String fileName) throws IOException {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        int port = httpServletRequest.getLocalPort();
-        String uploadUrl = httpServletRequest.getRemoteHost() + "/upload";
+        String uploadUrl = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" +
+                httpServletRequest.getServerPort() + "/upload";
         OkHttpClient client = new OkHttpClient();
 
         byte[] fileBytes;
@@ -106,7 +106,7 @@ public class FileUtils {
             buffer.flush();
             fileBytes = buffer.toByteArray();
         }
-        RequestBody requestBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"),fileBytes);
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", fileName, requestBody)
