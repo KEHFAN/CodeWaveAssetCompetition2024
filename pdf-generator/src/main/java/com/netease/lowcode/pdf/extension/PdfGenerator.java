@@ -9,6 +9,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.netease.lowcode.pdf.extension.itextpdf.NodeCreator;
+import com.netease.lowcode.pdf.extension.itextpdf.PdfUtils;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import com.netease.lowcode.pdf.extension.structures.CreateByTemplateRequest;
 import com.netease.lowcode.pdf.extension.structures.CreateRequest;
@@ -106,6 +107,7 @@ public class PdfGenerator {
             }
 
             JSONObject jsonObject = JSONObject.parseObject(sb.toString());
+//            JSONObject jsonObject = JSONObject.parseObject(PdfUtils.readJson("pdf-generator/src/main/resources/result.json"));
             ByteArrayOutputStream byteArrayOutputStream = NodeCreator.node(jsonObject);
             ByteArrayInputStream uploadStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 

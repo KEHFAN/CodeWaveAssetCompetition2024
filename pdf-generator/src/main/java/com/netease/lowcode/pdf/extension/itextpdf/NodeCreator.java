@@ -260,6 +260,9 @@ public class NodeCreator {
     public static Image image(JSONObject jsonObject) {
         try {
             BASE64Decoder decoder = new BASE64Decoder();
+            if(!jsonObject.containsKey("base64")){
+                throw new RuntimeException("图片缺少base64编码");
+            }
             String base64 = jsonObject.getString("base64");
             if (base64.contains("base64,")) {
                 base64 = base64.substring(base64.indexOf("base64,") + 7);

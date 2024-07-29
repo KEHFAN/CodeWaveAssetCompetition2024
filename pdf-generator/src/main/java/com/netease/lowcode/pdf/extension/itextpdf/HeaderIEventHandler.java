@@ -89,30 +89,30 @@ public class HeaderIEventHandler implements IEventHandler {
             if(header.containsKey("image")){
                 JSONObject image = header.getJSONObject("image");
 
-                com.itextpdf.layout.element.Image imageElement = null;
-                try {
-                    imageElement = new com.itextpdf.layout.element.Image(ImageDataFactory.create(image.getString("fileName")));
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-                float fitWidth = pageSize.getWidth(), fitHeight = pageSize.getHeight();
-                if (image.containsKey("fitWidth")) {
-                    fitWidth = image.getFloat("fitWidth");
-                }
-                if (image.containsKey("fitHeight")) {
-                    fitHeight = image.getFloat("fitHeight");
-                }
-                imageElement.scaleToFit(fitWidth, fitHeight);
-                if (image.containsKey("marginLeft")) {
-                    imageElement.setMarginLeft(image.getInteger("marginLeft"));
-                }
-                if (image.containsKey("marginTop")) {
-                    imageElement.setMarginTop(image.getInteger("marginTop"));
-                }
-                if (image.containsKey("opacity")) {
-                    // 透明度 0完全透明 1完全不透明
-                    imageElement.setOpacity(image.getFloat("opacity"));
-                }
+                com.itextpdf.layout.element.Image imageElement = NodeCreator.image(image);
+//                try {
+//                    imageElement = new com.itextpdf.layout.element.Image(ImageDataFactory.create(image.getString("fileName")));
+//                } catch (MalformedURLException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                float fitWidth = pageSize.getWidth(), fitHeight = pageSize.getHeight();
+//                if (image.containsKey("fitWidth")) {
+//                    fitWidth = image.getFloat("fitWidth");
+//                }
+//                if (image.containsKey("fitHeight")) {
+//                    fitHeight = image.getFloat("fitHeight");
+//                }
+//                imageElement.scaleToFit(fitWidth, fitHeight);
+//                if (image.containsKey("marginLeft")) {
+//                    imageElement.setMarginLeft(image.getInteger("marginLeft"));
+//                }
+//                if (image.containsKey("marginTop")) {
+//                    imageElement.setMarginTop(image.getInteger("marginTop"));
+//                }
+//                if (image.containsKey("opacity")) {
+//                    // 透明度 0完全透明 1完全不透明
+//                    imageElement.setOpacity(image.getFloat("opacity"));
+//                }
                 canvas.add(imageElement);
 
             }
