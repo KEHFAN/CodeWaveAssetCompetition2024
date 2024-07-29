@@ -38,7 +38,7 @@ public class WaterMaskIEventHandler implements IEventHandler {
 
             // 获取页面尺寸
             PageSize pageSize = PdfUtils.getPageSize(jsonObject.getString("pageSize"));
-            if (jsonObject.containsKey("rotate")) {
+            if (jsonObject.containsKey("rotate") && jsonObject.getBoolean("rotate")) {
                 pageSize = pageSize.rotate();
             }
             // 创建一个Canvas对象，用于添加水印

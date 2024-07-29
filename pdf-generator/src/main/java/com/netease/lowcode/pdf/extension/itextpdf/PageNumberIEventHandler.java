@@ -40,7 +40,7 @@ public class PageNumberIEventHandler implements IEventHandler {
 
             // 获取页面尺寸
             PageSize pageSize = PdfUtils.getPageSize(jsonObject.getString("pageSize"));
-            if (jsonObject.containsKey("rotate")) {
+            if (jsonObject.containsKey("rotate") && jsonObject.getBoolean("rotate")) {
                 pageSize = pageSize.rotate();
             }
 
