@@ -28,6 +28,32 @@
       "opacity": 0.5
     }
   },
+  "footer": {
+    "fontColor": "LIGHT_GRAY",
+    "fontSize": 20,
+    "text": "这里是页脚",
+    "marginLeft": 35,
+    "marginBottom": 50,
+    "textAlignment": "LEFT"
+  },
+  "waterMask": {
+    "fontColor": "LIGHT_GRAY",
+    "fontSize": 20,
+    "x": 0,
+    "y": 0,
+    "angle": 30,
+    "text": "这里是水印内容",
+    "xAxisElementSpacing": 200,
+    "yAxisElementSpacing": 200
+  },
+  "pageNumber":  {
+    "fontColor": "LIGHT_GRAY",
+    "fontSize": 10,
+    "text": "页码 第 %s - %s 页",
+    "marginRight": 100,
+    "marginBottom": 35,
+    "textAlignment": "CENTER"
+  },
   "nodes": [
     {
       "type": "Paragraph",
@@ -54,7 +80,7 @@
       "width": 100,
       "columnSize": 6,
       "cells": [
-        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "${contactPerson}"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电话"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "${contactPhone}"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电子邮箱"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]},
+        {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "${contactPerson}"}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电话"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": "${contactPhone}"}]},{"width": 11, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "联系人电子邮箱"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},
         {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "SPU型号"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "SPU名称"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "品牌"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]},
         {"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "样品量"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "批次号"}]},{"width": 23, "elements": [{"type": "Paragraph", "text": ""}]},{"width": 10, "textAlignment":"CENTER", "elements": [{"type": "Paragraph", "text": "快递单号"}]},{"width": 24, "elements": [{"type": "Paragraph", "text": ""}]}
       ]
