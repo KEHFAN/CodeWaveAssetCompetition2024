@@ -51,7 +51,11 @@ public class NodeCreator {
 
         JSONObject fontJSONObject = jsonObject.getJSONObject("font");
         document.setFont(PdfFontFactory.createFont(fontJSONObject.getString("fontProgram"),fontJSONObject.getString("encoding")));
-        document.setFontSize(jsonObject.getFloat("fontSize"));
+        if (jsonObject.containsKey("fontSize")) {
+            document.setFontSize(jsonObject.getFloat("fontSize"));
+        } else {
+            document.setFontSize(7);
+        }
 
         // 设置页边距
         if(jsonObject.containsKey("marginLeft")){

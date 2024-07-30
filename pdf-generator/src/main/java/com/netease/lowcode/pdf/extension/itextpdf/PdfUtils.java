@@ -7,6 +7,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Objects;
 
 public class PdfUtils {
 
@@ -53,6 +54,11 @@ public class PdfUtils {
     }
 
     public static PageSize getPageSize(String size){
+
+        if (Objects.isNull(size)) {
+            return PageSize.A4;
+        }
+
         switch (size){
             case "A0":
                 return PageSize.A0;
