@@ -240,7 +240,7 @@
             {
               "type": "CheckBox",
               "checked": true,
-              "checkBoxType": "CROSS",
+              "checkBoxType": "STAR",
               "size": 7,
               "border": {
                 "width": 1
@@ -253,7 +253,7 @@
             },{
               "type": "CheckBox",
               "checked": false,
-              "checkBoxType": "CROSS",
+              "checkBoxType": "STAR",
               "size": 7,
               "border": {
                 "width": 1
