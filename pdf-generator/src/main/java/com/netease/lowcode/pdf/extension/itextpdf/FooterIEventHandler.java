@@ -71,7 +71,7 @@ public class FooterIEventHandler implements IEventHandler {
                 throw new RuntimeException(e);
             }
 
-            float x = 0, y = pageSize.getTop();
+            float x = 0, y = 0;
             if (footer.containsKey("marginLeft")) {
                 x = footer.getFloat("marginLeft");
             }

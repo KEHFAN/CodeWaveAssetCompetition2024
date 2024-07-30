@@ -70,10 +70,19 @@ public class WaterMaskIEventHandler implements IEventHandler {
             }
 
             // 获取水印起始坐标
-            Float x = waterMask.getFloat("x");
-            Float y = waterMask.getFloat("y");
+            Float x = 0f;
+            if (waterMask.containsKey("x")) {
+                x = waterMask.getFloat("x");
+            }
+            Float y = 0f;
+            if (waterMask.containsKey("y")) {
+                y = waterMask.getFloat("y");
+            }
             // 获取水印旋转角度 （0~360°,逆时针方向）
-            Double angle = waterMask.getDouble("angle");
+            Double angle = 30.0;
+            if (waterMask.containsKey("angle")) {
+                angle = waterMask.getDouble("angle");
+            }
 
             float x_space = pageSize.getWidth(), y_space = pageSize.getHeight();
             if (waterMask.containsKey("xAxisElementSpacing")) {

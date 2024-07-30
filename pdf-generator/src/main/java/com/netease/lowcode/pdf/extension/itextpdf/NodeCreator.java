@@ -18,6 +18,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.netease.lowcode.pdf.extension.structures.NodeTypeEnum;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,9 @@ public class NodeCreator {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         String fileName = jsonObject.getString("fileName");
+        if (StringUtils.isBlank(fileName) || !fileName.endsWith(".pdf")) {
+            throw new RuntimeException("fileName必须以 *.pdf 结尾");
+        }
         PdfDocument pdfDocument = new PdfDocument(new PdfWriter(byteArrayOutputStream));
 
         // 设置纸张大小和方向: 默认纵向,rotate为横向
