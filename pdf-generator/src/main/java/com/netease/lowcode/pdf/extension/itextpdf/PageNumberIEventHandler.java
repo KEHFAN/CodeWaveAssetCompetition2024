@@ -72,7 +72,7 @@ public class PageNumberIEventHandler implements IEventHandler {
                 throw new RuntimeException(e);
             }
 
-            float x = 0, y = pageSize.getBottom();
+            float x = pageSize.getWidth(), y = pageSize.getBottom();
             if (pageNumber.containsKey("marginRight")) {
                 x = pageSize.getWidth() - pageNumber.getFloat("marginRight");
             }
