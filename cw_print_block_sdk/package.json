@@ -2,7 +2,7 @@
   "name": "cw_print_block_sdk",
   "title": "打印模块SDK",
   "description": "",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "./index.js",
   "author": "",
   "repository": "",
@@ -56,5 +56,5 @@
   "resolutions": {
     "globby": "9.2.0"
   },
-  "lastRelease": "b259c6c127bf16e3d97baf62aa72597b"
+  "lastRelease": "4f66baed7e29389a5e5f4a0ee356c75d"
 }

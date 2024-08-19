@@ -12,13 +12,13 @@
 
     <groupId>com.netease.lib</groupId>
     <artifactId>ip-filter-aop</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nasl.ide.version>3.3</nasl.ide.version>
+        <nasl.ide.version>3.8</nasl.ide.version>
     </properties>
     <dependencies>
         <!--本案例是本地系统引入nasl-metadata-collector-0.8.0.jar的方式。
@@ -28,17 +28,16 @@
         <dependency>
             <artifactId>nasl-metadata-collector</artifactId>
             <groupId>com.netease.lowcode</groupId>
-            <version>0.10.0</version>
+            <version>0.10.1</version>
             <optional>true</optional>
             <scope>system</scope>
-            <systemPath>${project.basedir}/jar/nasl-metadata-collector-0.10.0.jar</systemPath>
+            <systemPath>${project.basedir}/jar/nasl-metadata-collector-0.10.1.jar</systemPath>
         </dependency>
         <dependency>
             <artifactId>lcap-annotation</artifactId>
             <groupId>com.netease.lowcode</groupId>
-            <version>1.0.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/jar/lcap-annotation-1.0.3.jar</systemPath>
+            <version>1.0.4</version>
+            <!--            须安装到maven仓库，不可使用systemPath的方式-->
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -65,13 +64,19 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.10.5</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>com.netease.lowcode</groupId>
                 <artifactId>nasl-metadata-maven-plugin</artifactId>
-                <version>1.3.0</version>
+                <version>1.4.3</version>
                 <configuration>
                     <jarWithDependencies>false</jarWithDependencies>
                 </configuration>
