@@ -214,6 +214,15 @@ public class TemplateUtils {
                     JSONObject mergeCell = tmpCells.get(firstRow).get(firstColumn);
                     mergeCell.put("rowspan", lastRow - firstRow + 1);
                     mergeCell.put("colspan", lastColumn - firstColumn + 1);
+
+                    // 处理合并单元格边框,仅需处理右侧、底部
+                    if (tmpCells.get(firstRow).get(lastColumn).containsKey("borderRight")) {
+                        mergeCell.put("borderRight", tmpCells.get(firstRow).get(lastColumn).getJSONObject("borderRight"));
+                    }
+                    if (tmpCells.get(lastRow).get(lastColumn).containsKey("borderBottom")) {
+                        mergeCell.put("borderBottom", tmpCells.get(firstRow).get(lastColumn).getJSONObject("borderBottom"));
+                    }
+
                     // 处理合并区域第一行
                     List<JSONObject> first = tmpCells.get(firstRow);
                     List<JSONObject> newFirst = new ArrayList<>();
@@ -224,6 +233,7 @@ public class TemplateUtils {
                     for (int i = lastColumn + 1; i < first.size(); i++) {
                         newFirst.add(first.get(i));
                     }
+
                     tmpCells.set(firstRow, newFirst);
                     // 处理合并区域其他行
                     for (int i = firstRow + 1; i < lastRow; i++) {
