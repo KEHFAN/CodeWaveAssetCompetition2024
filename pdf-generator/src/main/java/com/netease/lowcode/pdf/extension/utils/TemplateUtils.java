@@ -61,17 +61,6 @@ public class TemplateUtils {
                 return null;
             }
 
-            // 获取合并区域
-            List<CellRangeAddress> mergedRegions = sheet0.getMergedRegions();
-            if(CollectionUtils.isNotEmpty(mergedRegions)){
-                for (CellRangeAddress mergedRegion : mergedRegions) {
-                    int firstRow = mergedRegion.getFirstRow();
-                    int lastRow = mergedRegion.getLastRow();
-                    int firstColumn = mergedRegion.getFirstColumn();
-                    int lastColumn = mergedRegion.getLastColumn();
-                }
-            }
-
             JSONObject table = new JSONObject();
             table.put("type","Table");
             table.put("width",100);
@@ -215,6 +204,71 @@ public class TemplateUtils {
                     }
                 }
             }
+
+            // 处理合并区域
+            List<CellRangeAddress> mergedRegions = sheet0.getMergedRegions();
+            if(CollectionUtils.isNotEmpty(mergedRegions)){
+                for (CellRangeAddress mergedRegion : mergedRegions) {
+                    int firstRow = mergedRegion.getFirstRow();
+                    int lastRow = mergedRegion.getLastRow();
+                    int firstColumn = mergedRegion.getFirstColumn();
+                    int lastColumn = mergedRegion.getLastColumn();
+
+                    // 记录合并单元格
+                    JSONObject mergeCell = tmpCells.get(firstRow).get(firstColumn);
+                    mergeCell.put("rowspan", lastRow - firstRow + 1);
+                    mergeCell.put("colspan", lastColumn - firstColumn + 1);
+                    // 处理合并区域第一行
+                    List<JSONObject> first = tmpCells.get(firstRow);
+                    List<JSONObject> newFirst = new ArrayList<>();
+                    for (int i = 0; i < firstColumn; i++) {
+                        newFirst.add(first.get(i));
+                    }
+                    newFirst.add(mergeCell);
+                    for (int i = lastColumn + 1; i < first.size(); i++) {
+                        newFirst.add(first.get(i));
+                    }
+                    tmpCells.set(firstRow, newFirst);
+                    // 处理合并区域其他行
+                    for (int i = firstRow + 1; i < lastRow; i++) {
+                        List<JSONObject> list = tmpCells.get(i);
+                        List<JSONObject> newList = new ArrayList<>();
+
+
+                        for (int j = 0; j < firstColumn; j++) {
+                            newList.add(list.get(j));
+                        }
+                        for (int j = lastColumn + 1; j < list.size(); j++) {
+                            newList.add(list.get(j));
+                        }
+                        // 移除被合并单元格
+                        tmpCells.set(i, newList);
+                    }
+                }
+            }
+
+            // 从全局设置cell宽度
+            int totalColWidth = sheetColWidthList.stream().mapToInt(Integer::intValue).sum();
+            for (int i = 0; i < tmpCells.size(); i++) {
+                List<JSONObject> list = tmpCells.get(i);
+                // 处理该行
+                for (int j = 0; j < list.size(); j++) {
+                    JSONObject currentCell = list.get(j);
+                    if (currentCell.containsKey("rowspan") && currentCell.containsKey("colspan")) {
+                        Integer colspan = currentCell.getInteger("colspan");
+                        float value = 0.0f;
+                        for (int k = j; k < j + colspan; k++) {
+                            value += ((sheetColWidthList.get(k) / (float) totalColWidth) * 100);
+                        }
+                        currentCell.put("width", Math.round(value));
+                        j = j + colspan;
+                    } else {
+                        float value = (sheetColWidthList.get(j) / (float) totalColWidth) * 100;
+                        currentCell.put("width", Math.round(value));
+                    }
+                }
+            }
+
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
                 for (JSONObject object : list) {
@@ -228,15 +282,6 @@ public class TemplateUtils {
             table.put("columnSize",maxSize);
             // TODO 通过计算获得
             // table.put("chunkSize",2);
-
-
-            // 从全局设置cell宽度
-            int totalColWidth = sheetColWidthList.stream().mapToInt(Integer::intValue).sum();
-            for (int i = 0; i < cells.size(); i++) {
-                JSONObject jsonCell = cells.getJSONObject(i);
-                float value = (sheetColWidthList.get(i % sheetColWidthList.size()) / (float) totalColWidth) * 100;
-                jsonCell.put("width", Math.round(value));
-            }
 
             BaseResponse response = PdfGenerator.createPDFV2ByStr("{\n" +
                     "    \"name\":\"测试名字\"\n" +

@@ -225,7 +225,12 @@ public class NodeCreator {
             throw new RuntimeException("cell缺少width");
         }
 
-        Cell cell = new Cell();
+        Cell cell;
+        if (jsonObject.containsKey("rowspan") && jsonObject.containsKey("colspan")) {
+            cell = new Cell(jsonObject.getInteger("rowspan"), jsonObject.getInteger("colspan"));
+        } else {
+            cell = new Cell();
+        }
         cell.setWidth(UnitValue.createPercentValue(jsonObject.getInteger("width")));
 
         if (jsonObject.containsKey("textAlignment")) {
