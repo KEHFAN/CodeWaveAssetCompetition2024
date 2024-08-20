@@ -8,6 +8,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
@@ -42,7 +44,7 @@ public class TemplateUtils {
             }
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("fileName","test22.pdf");
+            jsonObject.put("fileName","test23.pdf");
             // 字体设置
             jsonObject.put("font",new HashMap<String,String>(){{
                 put("fontProgram","STSong-Light");
@@ -51,7 +53,7 @@ public class TemplateUtils {
             // 纸张大小A4
             jsonObject.put("pageSize","A4");
             // 纸张方向
-            jsonObject.put("rotate",true);
+            jsonObject.put("rotate",false);
             JSONArray nodes = new JSONArray();
             jsonObject.put("nodes",nodes);
 
@@ -116,11 +118,26 @@ public class TemplateUtils {
                     // 单元格字体
                     Font font = wb.getFontAt(cell.getCellStyle().getFontIndexAsInt());
                     // 字体颜色
-                    short color = font.getColor();
+                    if (font instanceof XSSFFont) {
+                        XSSFFont xssfFont = (XSSFFont) font;
+                        XSSFColor xssfColor = xssfFont.getXSSFColor();
+                        if(Objects.nonNull(xssfColor)) {
+                            byte[] rgb = xssfColor.getRGB();
+                            paragraph.put("rgb", new HashMap<String, Integer>() {
+                                {
+                                    put("red", (rgb[0] < 0) ? (rgb[0] + 256) : rgb[0]);
+                                    put("green", (rgb[1] < 0) ? (rgb[1] + 256) : rgb[1]);
+                                    put("blue", (rgb[2] < 0) ? (rgb[2] + 256) : rgb[2]);
+                                }
+                            });
+                        }
+                    }
                     // 字体大小
                     short fontSize = font.getFontHeightInPoints();
+                    paragraph.put("fontSize",fontSize);
                     // 字体是否加粗
                     boolean bold = font.getBold();
+                    paragraph.put("bold", bold);
                     // 下划线
                     byte underline = font.getUnderline();
 

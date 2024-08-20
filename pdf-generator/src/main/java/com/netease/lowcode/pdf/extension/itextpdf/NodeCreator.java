@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.forms.fields.properties.CheckBoxType;
 import com.itextpdf.forms.form.element.CheckBox;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.CalRgb;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -127,6 +129,12 @@ public class NodeCreator {
         if(jsonObject.containsKey("fontColor")){
             paragraph.setFontColor(PdfUtils.getColor(jsonObject.getString("fontColor")));
         }
+        // 如果有rgb,将覆盖上面的color
+        if (jsonObject.containsKey("rgb")) {
+            JSONObject rgb = jsonObject.getJSONObject("rgb");
+            paragraph.setFontColor(new DeviceRgb(rgb.getInteger("red"), rgb.getInteger("green"), rgb.getInteger("blue")));
+        }
+
         if(jsonObject.containsKey("marginLeft")){
             paragraph.setMarginLeft(jsonObject.getInteger("marginLeft"));
         }
