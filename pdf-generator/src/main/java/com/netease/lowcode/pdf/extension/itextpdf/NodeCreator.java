@@ -12,6 +12,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
@@ -233,6 +234,25 @@ public class NodeCreator {
 
         if (!jsonObject.containsKey("elements")) {
             return cell;
+        }
+
+        // 去除默认边框
+        if (jsonObject.containsKey("noBorder") && jsonObject.getBoolean("noBorder")) {
+            cell.setBorder(Border.NO_BORDER);
+        }
+
+        // 设置单元格边框
+        if (jsonObject.containsKey("borderBottom")) {
+            cell.setBorderBottom(new SolidBorder(jsonObject.getJSONObject("borderBottom").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderTop")) {
+            cell.setBorderTop(new SolidBorder(jsonObject.getJSONObject("borderTop").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderLeft")) {
+            cell.setBorderLeft(new SolidBorder(jsonObject.getJSONObject("borderLeft").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderRight")) {
+            cell.setBorderRight(new SolidBorder(jsonObject.getJSONObject("borderRight").getInteger("width")));
         }
 
         JSONArray elements = jsonObject.getJSONArray("elements");

@@ -69,7 +69,6 @@ public class TemplateUtils {
                     int lastRow = mergedRegion.getLastRow();
                     int firstColumn = mergedRegion.getFirstColumn();
                     int lastColumn = mergedRegion.getLastColumn();
-                    System.out.println();
                 }
             }
 
@@ -154,9 +153,29 @@ public class TemplateUtils {
 
                     // 表格底部边框
                     BorderStyle borderBottom = cell.getCellStyle().getBorderBottom();
+                    if (BorderStyle.THIN.equals(borderBottom)) {
+                        JSONObject value = new JSONObject();
+                        value.put("width", 1);
+                        jsonCell.put("borderBottom", value);
+                    }
                     BorderStyle borderTop = cell.getCellStyle().getBorderTop();
+                    if (BorderStyle.THIN.equals(borderTop)) {
+                        JSONObject value = new JSONObject();
+                        value.put("width", 1);
+                        jsonCell.put("borderTop", value);
+                    }
                     BorderStyle borderLeft = cell.getCellStyle().getBorderLeft();
+                    if (BorderStyle.THIN.equals(borderLeft)) {
+                        JSONObject value = new JSONObject();
+                        value.put("width", 1);
+                        jsonCell.put("borderLeft", value);
+                    }
                     BorderStyle borderRight = cell.getCellStyle().getBorderRight();
+                    if (BorderStyle.THIN.equals(borderRight)) {
+                        JSONObject value = new JSONObject();
+                        value.put("width", 1);
+                        jsonCell.put("borderRight", value);
+                    }
 
                 }
 
@@ -198,6 +217,10 @@ public class TemplateUtils {
             }
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
+                for (JSONObject object : list) {
+                    // 去除单元格默认边框
+                    object.put("noBorder", true);
+                }
                 cells.addAll(list);
             }
 
