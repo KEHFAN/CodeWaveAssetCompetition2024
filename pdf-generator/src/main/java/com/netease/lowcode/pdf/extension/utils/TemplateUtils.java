@@ -134,8 +134,14 @@ public class TemplateUtils {
 
                     // 判断水平居中
                     HorizontalAlignment alignment = cell.getCellStyle().getAlignment();
+                    if (HorizontalAlignment.CENTER.equals(alignment)) {
+                        jsonCell.put("textAlignment", "CENTER");
+                    }
                     // 判断垂直居中
                     VerticalAlignment verticalAlignment = cell.getCellStyle().getVerticalAlignment();
+                    if (VerticalAlignment.CENTER.equals(verticalAlignment)) {
+
+                    }
 
                     // 表格底部边框
                     BorderStyle borderBottom = cell.getCellStyle().getBorderBottom();
