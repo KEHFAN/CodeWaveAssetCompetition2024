@@ -107,8 +107,10 @@ public class NodeCreator {
             return null;
         }
         Paragraph paragraph = new Paragraph();
-        if(jsonObject.containsKey("text")){
+        if (jsonObject.containsKey("text")) {
             paragraph.add(jsonObject.getString("text"));
+        } else {
+            paragraph.add("");
         }
         if(jsonObject.containsKey("textAlignment")){
             paragraph.setTextAlignment(TextAlignment.valueOf(jsonObject.getString("textAlignment")));

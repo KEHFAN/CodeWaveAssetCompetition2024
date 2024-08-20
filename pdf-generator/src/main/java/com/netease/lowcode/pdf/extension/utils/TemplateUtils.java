@@ -107,7 +107,6 @@ public class TemplateUtils {
                     Cell cell = row.getCell(j);
 
                     if (Objects.isNull(cell)) {
-                        paragraph.put("text", "null");
                         currentRowColWidths.add(0);
                         continue;
                     }
@@ -130,8 +129,6 @@ public class TemplateUtils {
                     CellType cellType = cell.getCellType();
                     if (CellType.STRING.equals(cellType)) {
                         paragraph.put("text", cell.getStringCellValue());
-                    } else if (CellType.BLANK.equals(cellType)) {
-                        paragraph.put("text", "blank");
                     }
 
 
@@ -197,7 +194,6 @@ public class TemplateUtils {
                         JSONArray elements = new JSONArray();
                         JSONObject paragraph = new JSONObject();
                         paragraph.put("type", "Paragraph");
-                        paragraph.put("text","对齐");
                         elements.add(paragraph);
                         jsonCell.put("elements", elements);
                         tmpRow.add(jsonCell);
