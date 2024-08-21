@@ -2,6 +2,7 @@ package com.netease.lowcode.pdf.extension.utils;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.netease.lowcode.pdf.extension.Excel2Pdf;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,8 +26,8 @@ public class JSONObjectUtil {
         // 获取 list标签名称，一行只填充一个list，不支持多个
         String listName = "";
         for (int i = 0; i < originRow.size(); i++) {
-            if(TemplateUtils.isFreemarkerListTag(originRow.get(i))){
-                String cellText = TemplateUtils.getCellText(originRow.get(i));
+            if(Excel2Pdf.isFreemarkerListTag(originRow.get(i))){
+                String cellText = Excel2Pdf.getCellText(originRow.get(i));
                 // 获取list名称
                 listName = cellText.substring(2, cellText.indexOf("."));
             }
@@ -53,8 +54,8 @@ public class JSONObjectUtil {
             String arrHasRead = "";
             // 填充每一个cell
             for (int j = 0; j < cloneRow.size(); j++) {
-                if (TemplateUtils.isFreemarkerListTag(cloneRow.get(j))) {
-                    String cellText = TemplateUtils.getCellText(cloneRow.get(j));
+                if (Excel2Pdf.isFreemarkerListTag(cloneRow.get(j))) {
+                    String cellText = Excel2Pdf.getCellText(cloneRow.get(j));
                     // 属性名
                     String arrName = cellText.substring(cellText.indexOf(".") + 1, cellText.length() - 1);
                     if(StringUtils.equals(arrName,arrHasRead)){

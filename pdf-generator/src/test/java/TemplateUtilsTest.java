@@ -1,6 +1,6 @@
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.netease.lowcode.pdf.extension.utils.TemplateUtils;
+import com.netease.lowcode.pdf.extension.Excel2Pdf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class TemplateUtilsTest {
         paragraph.put("text","${list.arr}");
         array.add(paragraph);
         cell.put("elements", array);
-        System.out.println(TemplateUtils.isFreemarkerListTag(cell));
+        System.out.println(Excel2Pdf.isFreemarkerListTag(cell));
     }
 
     public static void main2(String[] args) {
@@ -75,7 +75,7 @@ public class TemplateUtilsTest {
         item2.put("arr","arr数据2");
         requestList.add(item2);
         requestJsonData.put("list", requestList);
-        TemplateUtils.handleFreemarkerList(tmpCells, requestJsonData);
+        Excel2Pdf.handleFreemarkerList(tmpCells, requestJsonData);
         System.out.println();
     }
 }

@@ -1,71 +1,74 @@
-package com.netease.lowcode.pdf.extension.utils;
+package com.netease.lowcode.pdf.extension;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.netease.lowcode.pdf.extension.PdfGenerator;
+import com.netease.lowcode.core.annotation.NaslLogic;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
+import com.netease.lowcode.pdf.extension.structures.CreateByXlsxRequest;
+import com.netease.lowcode.pdf.extension.utils.FileUtils;
+import com.netease.lowcode.pdf.extension.utils.JSONObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class TemplateUtils {
+public class Excel2Pdf {
 
 
-    // 是否设置logo 放在参数里
-    public static String transfer(String jsonData) {
-        // 读取excel解析出样式，然后输出模板json，传入pdfV2
-        // 包括解析字体颜色，大小，映射出表格，文本等。
-
-        // 直接将excel按照单元格解析，pdf中也创建一个大表格，通过映射单元格的边框 实现一一对应。
-        // 解析excel不再出现段落的概念，全都是单元格cell
+    @NaslLogic
+    public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
 
         try {
+            if(StringUtils.isBlank(request.getJsonData())){
+                return BaseResponse.FAIL("请求数据jsonData为空");
+            }
+            if (StringUtils.isBlank(request.getExportFileName()) || !request.getExportFileName().endsWith(".pdf")) {
+                return BaseResponse.FAIL("exportFileName必须以 .pdf 结尾");
+            }
             // 解析参数
-            JSONObject requestJsonData = JSONObject.parseObject(jsonData);
+            JSONObject requestJsonData = JSONObject.parseObject(request.getJsonData());
 
-            // TODO:识别xls与xlsx分别处理
-            String fileName = "C:\\Users\\fankehu\\Desktop\\新建 XLS 工作表.xlsx";
-            InputStream inputStream = new FileInputStream(fileName);
+            // 下载模板文件
+            File templateFile = FileUtils.downloadFile(request.getTemplateUrl());
+
+            String fileName = templateFile.getName();
+            InputStream inputStream = new FileInputStream(templateFile);
 
             Workbook wb = null;
             if (fileName.endsWith(".xlsx")) {
                 // 解析 *.xlsx
                 wb = new XSSFWorkbook(inputStream);
-            } else if (fileName.endsWith(".xls")) {
-                wb = new HSSFWorkbook(inputStream);
             } else {
-                throw new RuntimeException("不支持");
+                return BaseResponse.FAIL("仅支持 *.xlsx 文件");
             }
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("fileName","test23.pdf");
+            jsonObject.put("fileName",request.getExportFileName());
             // 字体设置
             jsonObject.put("font",new HashMap<String,String>(){{
                 put("fontProgram","STSong-Light");
                 put("encoding","UniGB-UCS2-H");
             }});
             // 纸张大小A4
-            jsonObject.put("pageSize","A4");
+            jsonObject.put("pageSize",request.getPageSize());
             // 纸张方向
-            jsonObject.put("rotate",false);
+            jsonObject.put("rotate",request.getRotate());
             JSONArray nodes = new JSONArray();
             jsonObject.put("nodes",nodes);
 
             // 读取第0个sheet
             Sheet sheet0 = wb.getSheetAt(0);
             if (Objects.isNull(sheet0)) {
-                return null;
+                return BaseResponse.FAIL("读取sheet0为空");
             }
 
             JSONObject table = new JSONObject();
@@ -80,9 +83,6 @@ public class TemplateUtils {
             List<Integer> sheetColWidthList = new ArrayList<>();
             // 暂存单元格
             List<List<JSONObject>> tmpCells = new ArrayList<>();
-            // 统计freemarker list语法
-            List<String> freemarkerList = new ArrayList<>();
-
 
             // 遍历sheet行
             for (int i = 0; i < sheet0.getLastRowNum(); i++) {
@@ -107,10 +107,6 @@ public class TemplateUtils {
                     jsonCell.put("elements", elements);
 
                     curRowTmpCells.add(jsonCell);
-
-
-                    // TODO: 判断是否位于合并区域
-
 
                     // 获取单元格
                     Cell cell = row.getCell(j);
@@ -322,15 +318,15 @@ public class TemplateUtils {
             // 由于将整个sheet解析为一个完整的table，因此不再设置chunkSize
             // table.put("chunkSize",2);
 
-            BaseResponse response = PdfGenerator.createPDFV2ByStr(jsonData, jsonObject.toJSONString());
+            BaseResponse response = PdfGenerator.createPDFV2ByStr(request.getJsonData(), jsonObject.toJSONString());
             if (response.getSuccess()) {
-                System.out.println();
+                return BaseResponse.OK(response.filePath, response.result);
             }
 
+            return BaseResponse.FAIL(response.trace, "pdf创建失败:" + response.msg);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }
-        return null;
     }
 
     /**
@@ -430,31 +426,5 @@ public class TemplateUtils {
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        TemplateUtils.transfer(
-                "{\n" +
-                        "    \"name\":\"测试名字\",\n" +
-                        "    \"list\":[\n" +
-                        "        {\n" +
-                        "            \"no\":1,\n" +
-                        "            \"name\":\"项目1\",\n" +
-                        "            \"std\":\"国标1\"\n" +
-                        "        },\n" +
-                        "        {\n" +
-                        "            \"no\":2,\n" +
-                        "            \"name\":\"项目2\",\n" +
-                        "            \"std\":\"国标2\"\n" +
-                        "        },\n" +
-                        "        {\n" +
-                        "            \"no\":3,\n" +
-                        "            \"name\":\"项目3\",\n" +
-                        "            \"std\":\"国标3\"\n" +
-                        "        }\n" +
-                        "    ]\n" +
-                        "}"
-        );
-
     }
 }
