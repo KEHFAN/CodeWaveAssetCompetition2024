@@ -306,51 +306,7 @@ public class TemplateUtils {
             }
 
             // 处理freemarker list
-            // 长列表分块，表头必须在同一行，必须相邻，必须占据完整一行。
-            for (int i = 0; i < tmpCells.size(); i++) {
-                List<JSONObject> originRow = tmpCells.get(i);
-                // 判断该行是否有freemarker list
-                boolean freemarkerListFlag = false;
-                for (int j = 0; j < originRow.size(); j++) {
-                    JSONObject cell = originRow.get(j);
-                    if(!cell.containsKey("elements")){
-                        continue;
-                    }
-                    for (int k = 0; k < cell.getJSONArray("elements").size(); k++) {
-                        JSONObject para = cell.getJSONArray("elements").getJSONObject(k);
-                        if(!para.containsKey("text")){
-                            break;
-                        }
-                        String text = para.getString("text");
-                        // 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
-                        if (StringUtils.isNotBlank(text) &&
-                                text.startsWith("${") &&
-                                text.endsWith("}") &&
-                                text.contains(".")) {
-                            freemarkerListFlag = true;
-                            break;
-                        }
-                    }
-                    if(freemarkerListFlag){
-                        break;
-                    }
-                }
-                if(!freemarkerListFlag){
-                    continue;
-                }
-                // 当前行为freemarker list 进行填充数据
-                // 首先暂存list，并从tmpCells中移除该行
-
-                // copy list，按顺序填充jsonData中的数据，每填充一组就移除一组
-                List<List<JSONObject>> fillRows = JSONObjectUtil.fillListData(originRow,requestJsonData);
-                // 移除cell，将fillRows填充到该位置
-
-                // 然后将填充好的copy list插入指定位置
-                // 如果数据非空，则继续copy list，进行填充
-
-                // 这种按顺序填充，天然支持分chunk
-
-            }
+            handleFreemarkerList(tmpCells,requestJsonData);
 
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
@@ -375,6 +331,105 @@ public class TemplateUtils {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    /**
+     * 处理freemarker list标签
+     *
+     * @param tmpCells
+     */
+    public static void handleFreemarkerList(List<List<JSONObject>> tmpCells, JSONObject requestJsonData) {
+        if (CollectionUtils.isEmpty(tmpCells)) {
+            return;
+        }
+
+        int i = 0;
+        while (i < tmpCells.size()) {
+            // 当前行
+            List<JSONObject> originRow = tmpCells.get(i);
+            if (CollectionUtils.isEmpty(originRow)) {
+                i++;
+                continue;
+            }
+
+            // 判断当前行是否包含freemarker list标签 ${list.arr}
+            boolean hasFreemarkerListTag = false;
+            for (int j = 0; j < originRow.size(); j++) {
+                JSONObject originCell = originRow.get(j);
+                if (isFreemarkerListTag(originCell)) {
+                    hasFreemarkerListTag = true;
+                    break;
+                }
+            }
+
+            // 包含list标签，开始处理
+            if (hasFreemarkerListTag) {
+                List<List<JSONObject>> newRows = JSONObjectUtil.fillListData(originRow, requestJsonData);
+                // 将originRow 替换为 newRows
+                for (int j = 0; j < newRows.size(); j++) {
+                    tmpCells.add(i + j, newRows.get(j));
+                }
+                // 移除originRow
+                tmpCells.remove(i + newRows.size());
+                i += newRows.size();
+            } else {
+                i++;
+            }
+        }
+    }
+
+    /**
+     * 获取cell内paragraph的text字段值
+     *
+     * @param cell
+     * @return
+     */
+    public static String getCellText(JSONObject cell) {
+        if (Objects.isNull(cell)) {
+            return null;
+        }
+        if (!cell.containsKey("elements")) {
+            return null;
+        }
+        JSONArray elements = cell.getJSONArray("elements");
+        if (Objects.isNull(elements) || elements.isEmpty()) {
+            return null;
+        }
+        JSONObject paragraph = elements.getJSONObject(0);
+        if (!paragraph.containsKey("text")) {
+            return null;
+        }
+        return paragraph.getString("text");
+    }
+
+    /**
+     * 判断一个cell是否为freemarker 的list 标签
+     * 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
+     *
+     * @param cell
+     * @return
+     */
+    public static boolean isFreemarkerListTag(JSONObject cell) {
+        if (Objects.isNull(cell)) {
+            return false;
+        }
+        if (!cell.containsKey("elements")) {
+            return false;
+        }
+        JSONArray elements = cell.getJSONArray("elements");
+        if (Objects.isNull(elements) || elements.isEmpty()) {
+            return false;
+        }
+        JSONObject paragraph = elements.getJSONObject(0);
+        if (!paragraph.containsKey("text")) {
+            return false;
+        }
+        String text = paragraph.getString("text");
+        if (StringUtils.isNotBlank(text) && text.startsWith("${") && text.endsWith("}") && text.contains(".")) {
+            return true;
+        }
+
+        return false;
     }
 
     public static void main(String[] args) {

@@ -2,12 +2,10 @@ package com.netease.lowcode.pdf.extension.utils;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JSONObjectUtil {
 
@@ -20,72 +18,126 @@ public class JSONObjectUtil {
      */
     public static List<List<JSONObject>> fillListData(List<JSONObject> originRow, JSONObject requestJsonData) {
 
-        Map<String, JSONArray> tmpRequestData = new HashMap<>();
+        if (Objects.isNull(requestJsonData)) {
+            return new ArrayList<>();
+        }
 
-        List<JSONObject> cloneRow = new ArrayList<>();
-        for (int j = 0; j < originRow.size(); j++) {
-            JSONObject originCell = originRow.get(j);
-            JSONObject cloneCell = originCell.clone();
-            // 找到需要填充的list
-            if(originCell.containsKey("elements")&&originCell.getJSONArray("elements").getJSONObject(0).containsKey("text")){
-                String originText = originCell.getJSONArray("elements").getJSONObject(0).getString("text");
-                // 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
-                if (StringUtils.isNotBlank(originText) &&
-                        originText.startsWith("${") &&
-                        originText.endsWith("}") &&
-                        originText.contains(".")) {
+        // 获取 list标签名称，一行只填充一个list，不支持多个
+        String listName = "";
+        for (int i = 0; i < originRow.size(); i++) {
+            if(TemplateUtils.isFreemarkerListTag(originRow.get(i))){
+                String cellText = TemplateUtils.getCellText(originRow.get(i));
+                // 获取list名称
+                listName = cellText.substring(2, cellText.indexOf("."));
+            }
+        }
+        // 未找到list名
+        if(StringUtils.isBlank(listName)){
+            return new ArrayList<>();
+        }
+        // 请求数据不包含该list
+        if(!requestJsonData.containsKey(listName)){
+            return new ArrayList<>();
+        }
+        JSONArray requestArrayData = requestJsonData.getJSONArray(listName);
+        if(requestArrayData.isEmpty()){
+            return new ArrayList<>();
+        }
 
-                    // 获取list名称
-                    String listName = originText.substring(2, originText.indexOf("."));
+        List<List<JSONObject>> newRows = new ArrayList<>();
+
+        for (int i = 0; i < requestArrayData.size(); i++) {
+            // 开始填充
+            List<JSONObject> cloneRow = deepCloneList(originRow);
+            // 记录当前是否填充过该字段，用于横向分块
+            String arrHasRead = "";
+            // 填充每一个cell
+            for (int j = 0; j < cloneRow.size(); j++) {
+                if (TemplateUtils.isFreemarkerListTag(cloneRow.get(j))) {
+                    String cellText = TemplateUtils.getCellText(cloneRow.get(j));
                     // 属性名
-                    String arrName = originText.substring(originText.indexOf(".") + 1, originText.length() - 1);
-
-                    // 开始填充数据
-                    if(!requestJsonData.containsKey(listName)){
-                        // 请求中不包含当前list的填充数据
-                        continue;
+                    String arrName = cellText.substring(cellText.indexOf(".") + 1, cellText.length() - 1);
+                    if(StringUtils.equals(arrName,arrHasRead)){
+                        // 横向分块，用下一组数据填充
+                        i++;
                     }
-                    // 先从缓存获取
-                    if (tmpRequestData.containsKey(listName)) {
-                        JSONArray jsonArray = tmpRequestData.get(listName);
-                        // 获取数据
-                        if(jsonArray.isEmpty()){
-                            continue;
+                    // 判断数据是否越界
+                    if (i >= requestArrayData.size()) {
+                        // 后续的行填充空数据,结束填充
+                        for (int k = j; k < cloneRow.size(); k++) {
+                            cloneRow.get(k).getJSONArray("elements").getJSONObject(0).put("text", "");
                         }
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        if(!jsonObject.containsKey(arrName)){
-                            // 对象中不包含该属性
-                            continue;
-                        }
-                        cloneCell.getJSONArray("elements").getJSONObject(0).put("text",jsonObject.getString(arrName));
-                        // 请求数据移除该组
+                        break;
+                    }
 
-                    } else {
-                        JSONArray jsonArray = requestJsonData.getJSONArray(listName);
-                        if(jsonArray.isEmpty()){
-                            continue;
-                        }
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        if(!jsonObject.containsKey(arrName)){
-                            // 对象中不包含该属性
-                            continue;
-                        }
-                        cloneCell.getJSONArray("elements").getJSONObject(0).put("text",jsonObject.getString(arrName));
+                    JSONObject jsonObject = requestArrayData.getJSONObject(i);
 
-                        tmpRequestData.put(listName, jsonArray);
+                    String value = jsonObject.containsKey(arrName) ? jsonObject.getString(arrName) : "";
+                    cloneRow.get(j).getJSONArray("elements").getJSONObject(0).put("text", value);
+
+                    if(StringUtils.isBlank(arrHasRead)){
+                        arrHasRead = arrName;
                     }
                 }
             }
-
-
-            cloneRow.add(cloneCell);
-
+            newRows.add(cloneRow);
         }
 
+        return newRows;
+    }
 
 
+    private static List<JSONObject> deepCloneList(List<JSONObject> originList) {
+        if (CollectionUtils.isEmpty(originList)) {
+            return new ArrayList<>();
+        }
+        List<JSONObject> cloneList = new ArrayList<>();
+        for (int i = 0; i < originList.size(); i++) {
+            JSONObject oriJsonObject = originList.get(i);
+            cloneList.add(JSONObject.parseObject(oriJsonObject.toJSONString()));
+        }
+        return cloneList;
+    }
 
-        return null;
+    /**
+     * 填充cell
+     *
+     * @param cloneCell
+     * @param jsonArray
+     * @param arrName
+     * @param arrHasRead
+     */
+    private static void fillCellData(JSONObject cloneCell, JSONArray jsonArray, String arrName, String arrHasRead) {
+
+        // 判断是否开始处理分块部分
+        if (StringUtils.equals(arrName, arrHasRead)) {
+            // 已经处理过该组数据，移除0
+            jsonArrayRemove0(jsonArray);
+        }
+        if (jsonArray.isEmpty()) {
+            return;
+        }
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        if (!jsonObject.containsKey(arrName)) {
+            // 对象中不包含该属性
+            return;
+        }
+        cloneCell.getJSONArray("elements").getJSONObject(0).put("text", jsonObject.getString(arrName));
+    }
+
+    /**
+     * 移除JSONArray中的第0个元素(如果存在的话)
+     *
+     * @param jsonArray
+     */
+    public static void jsonArrayRemove0(JSONArray jsonArray) {
+        if(Objects.isNull(jsonArray)){
+            return;
+        }
+        if(jsonArray.isEmpty()){
+            return;
+        }
+        jsonArray.remove(0);
     }
 
 }
