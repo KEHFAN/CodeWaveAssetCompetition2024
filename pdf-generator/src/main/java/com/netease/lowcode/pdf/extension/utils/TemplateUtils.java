@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.pdf.extension.PdfGenerator;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -21,7 +23,7 @@ public class TemplateUtils {
 
 
     // 是否设置logo 放在参数里
-    public static String transfer() {
+    public static String transfer(String jsonData) {
         // 读取excel解析出样式，然后输出模板json，传入pdfV2
         // 包括解析字体颜色，大小，映射出表格，文本等。
 
@@ -29,6 +31,9 @@ public class TemplateUtils {
         // 解析excel不再出现段落的概念，全都是单元格cell
 
         try {
+            // 解析参数
+            JSONObject requestJsonData = JSONObject.parseObject(jsonData);
+
             // TODO:识别xls与xlsx分别处理
             String fileName = "C:\\Users\\fankehu\\Desktop\\新建 XLS 工作表.xlsx";
             InputStream inputStream = new FileInputStream(fileName);
@@ -75,6 +80,8 @@ public class TemplateUtils {
             List<Integer> sheetColWidthList = new ArrayList<>();
             // 暂存单元格
             List<List<JSONObject>> tmpCells = new ArrayList<>();
+            // 统计freemarker list语法
+            List<String> freemarkerList = new ArrayList<>();
 
 
             // 遍历sheet行
@@ -298,6 +305,53 @@ public class TemplateUtils {
                 }
             }
 
+            // 处理freemarker list
+            // 长列表分块，表头必须在同一行，必须相邻，必须占据完整一行。
+            for (int i = 0; i < tmpCells.size(); i++) {
+                List<JSONObject> originRow = tmpCells.get(i);
+                // 判断该行是否有freemarker list
+                boolean freemarkerListFlag = false;
+                for (int j = 0; j < originRow.size(); j++) {
+                    JSONObject cell = originRow.get(j);
+                    if(!cell.containsKey("elements")){
+                        continue;
+                    }
+                    for (int k = 0; k < cell.getJSONArray("elements").size(); k++) {
+                        JSONObject para = cell.getJSONArray("elements").getJSONObject(k);
+                        if(!para.containsKey("text")){
+                            break;
+                        }
+                        String text = para.getString("text");
+                        // 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
+                        if (StringUtils.isNotBlank(text) &&
+                                text.startsWith("${") &&
+                                text.endsWith("}") &&
+                                text.contains(".")) {
+                            freemarkerListFlag = true;
+                            break;
+                        }
+                    }
+                    if(freemarkerListFlag){
+                        break;
+                    }
+                }
+                if(!freemarkerListFlag){
+                    continue;
+                }
+                // 当前行为freemarker list 进行填充数据
+                // 首先暂存list，并从tmpCells中移除该行
+
+                // copy list，按顺序填充jsonData中的数据，每填充一组就移除一组
+                List<List<JSONObject>> fillRows = fillListData(originRow,requestJsonData);
+                // 移除cell，将fillRows填充到该位置
+
+                // 然后将填充好的copy list插入指定位置
+                // 如果数据非空，则继续copy list，进行填充
+
+                // 这种按顺序填充，天然支持分chunk
+
+            }
+
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
                 for (JSONObject object : list) {
@@ -309,12 +363,10 @@ public class TemplateUtils {
 
             // 设置表格列数
             table.put("columnSize",maxSize);
-            // TODO 通过计算获得
+            // 由于将整个sheet解析为一个完整的table，因此不再设置chunkSize
             // table.put("chunkSize",2);
 
-            BaseResponse response = PdfGenerator.createPDFV2ByStr("{\n" +
-                    "    \"name\":\"测试名字\"\n" +
-                    "}", jsonObject.toJSONString());
+            BaseResponse response = PdfGenerator.createPDFV2ByStr(jsonData, jsonObject.toJSONString());
             if (response.getSuccess()) {
                 System.out.println();
             }
@@ -325,7 +377,47 @@ public class TemplateUtils {
         return null;
     }
 
+    private static List<List<JSONObject>> fillListData(List<JSONObject> originRow,JSONObject requestJsonData) {
+
+        Map<String,JSONArray> tmpRequestData = new HashMap<>();
+
+        List<JSONObject> cloneRow = new ArrayList<>();
+        for (int j = 0; j < originRow.size(); j++) {
+            JSONObject originCell = originRow.get(j);
+            // 找到需要填充的list
+            if(originCell.containsKey("elements")&&originCell.getJSONArray("elements").getJSONObject(0).containsKey("text")){
+                String originText = originCell.getJSONArray("elements").getJSONObject(0).getString("text");
+                // 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
+                if (StringUtils.isNotBlank(originText) &&
+                        originText.startsWith("${") &&
+                        originText.endsWith("}") &&
+                        originText.contains(".")) {
+
+                    // 获取list名称
+                    String listName = originText.substring(2, originText.indexOf("."));
+                    // 属性名
+                    String arrName = originText.substring(originText.indexOf(".") + 1, originText.length() - 1);
+                }
+            }
+
+
+            cloneRow.add(originCell.clone());
+
+        }
+
+
+
+
+        return null;
+    }
+
     public static void main(String[] args) {
-        TemplateUtils.transfer();
+        TemplateUtils.transfer("{\n" +
+                "    \"name\":\"测试名字\"\n" +
+                "}");
+
+//        String s = "${list.arr}";
+//        System.out.println(s.substring(2,s.indexOf(".")));
+//        System.out.println(s.substring(s.indexOf(".")+1,s.length()-1));
     }
 }
