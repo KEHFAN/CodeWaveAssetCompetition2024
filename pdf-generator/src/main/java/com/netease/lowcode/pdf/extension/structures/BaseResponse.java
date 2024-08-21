@@ -70,4 +70,15 @@ public class BaseResponse {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
+
+    @Override
+    public String toString() {
+        return "BaseResponse{" +
+                "success=" + success +
+                ", msg='" + msg + '\'' +
+                ", trace='" + trace + '\'' +
+                ", result='" + result + '\'' +
+                ", filePath='" + filePath + '\'' +
+                '}';
+    }
 }

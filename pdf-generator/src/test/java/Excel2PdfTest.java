@@ -1,4 +1,5 @@
 import com.netease.lowcode.pdf.extension.Excel2Pdf;
+import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import com.netease.lowcode.pdf.extension.structures.CreateByXlsxRequest;
 
 public class Excel2PdfTest {
@@ -26,6 +27,9 @@ public class Excel2PdfTest {
                 "}";
         CreateByXlsxRequest request = new CreateByXlsxRequest();
         request.setJsonData(s);
-        Excel2Pdf.xlsx2pdf(request);
+        request.setExportFileName("测试.pdf");
+        request.setTemplateUrl("https://dev-excel2pdf-kehfan.app.codewave.163.com:443/upload/app/4c1cce32-ed6c-4659-878d-2b5ab749e24d/白贝壳测试模板_20240821172851191.xlsx");
+        BaseResponse baseResponse = Excel2Pdf.xlsx2pdf(request);
+        System.out.println(baseResponse);
     }
 }

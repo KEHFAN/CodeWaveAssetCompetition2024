@@ -293,7 +293,6 @@ public class Excel2Pdf {
                             value += ((sheetColWidthList.get(k) / (float) totalColWidth) * 100);
                         }
                         currentCell.put("width", Math.round(value));
-                        j = j + colspan;
                     } else {
                         float value = (sheetColWidthList.get(j) / (float) totalColWidth) * 100;
                         currentCell.put("width", Math.round(value));
