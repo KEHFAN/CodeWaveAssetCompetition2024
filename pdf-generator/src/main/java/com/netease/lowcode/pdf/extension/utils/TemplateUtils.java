@@ -342,7 +342,7 @@ public class TemplateUtils {
                 // 首先暂存list，并从tmpCells中移除该行
 
                 // copy list，按顺序填充jsonData中的数据，每填充一组就移除一组
-                List<List<JSONObject>> fillRows = fillListData(originRow,requestJsonData);
+                List<List<JSONObject>> fillRows = JSONObjectUtil.fillListData(originRow,requestJsonData);
                 // 移除cell，将fillRows填充到该位置
 
                 // 然后将填充好的copy list插入指定位置
@@ -377,47 +377,10 @@ public class TemplateUtils {
         return null;
     }
 
-    private static List<List<JSONObject>> fillListData(List<JSONObject> originRow,JSONObject requestJsonData) {
-
-        Map<String,JSONArray> tmpRequestData = new HashMap<>();
-
-        List<JSONObject> cloneRow = new ArrayList<>();
-        for (int j = 0; j < originRow.size(); j++) {
-            JSONObject originCell = originRow.get(j);
-            // 找到需要填充的list
-            if(originCell.containsKey("elements")&&originCell.getJSONArray("elements").getJSONObject(0).containsKey("text")){
-                String originText = originCell.getJSONArray("elements").getJSONObject(0).getString("text");
-                // 匹配 ${xx.xxx} xx为list变量名，xxx为item属性名
-                if (StringUtils.isNotBlank(originText) &&
-                        originText.startsWith("${") &&
-                        originText.endsWith("}") &&
-                        originText.contains(".")) {
-
-                    // 获取list名称
-                    String listName = originText.substring(2, originText.indexOf("."));
-                    // 属性名
-                    String arrName = originText.substring(originText.indexOf(".") + 1, originText.length() - 1);
-                }
-            }
-
-
-            cloneRow.add(originCell.clone());
-
-        }
-
-
-
-
-        return null;
-    }
-
     public static void main(String[] args) {
         TemplateUtils.transfer("{\n" +
                 "    \"name\":\"测试名字\"\n" +
                 "}");
 
-//        String s = "${list.arr}";
-//        System.out.println(s.substring(2,s.indexOf(".")));
-//        System.out.println(s.substring(s.indexOf(".")+1,s.length()-1));
     }
 }
