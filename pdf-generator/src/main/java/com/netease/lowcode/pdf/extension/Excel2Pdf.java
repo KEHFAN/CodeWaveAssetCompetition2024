@@ -85,15 +85,16 @@ public class Excel2Pdf {
             List<List<JSONObject>> tmpCells = new ArrayList<>();
 
             // 遍历sheet行
-            for (int i = 0; i < sheet0.getLastRowNum(); i++) {
+            for (int i = 0; i <= sheet0.getLastRowNum(); i++) {
                 Row row = sheet0.getRow(i);
-                if(Objects.isNull(row)){
-                    continue;
-                }
-
                 // 暂存该行单元格
                 List<JSONObject> curRowTmpCells = new ArrayList<>();
                 tmpCells.add(curRowTmpCells);
+
+                if(Objects.isNull(row)){
+                    // 保留空行
+                    continue;
+                }
 
                 List<Integer> currentRowColWidths = new ArrayList<>();
                 // 遍历列，注意模板不要超过A4的宽度
