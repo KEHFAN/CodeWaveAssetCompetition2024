@@ -17,6 +17,7 @@ import com.netease.lowcode.pdf.extension.utils.FileUtils;
 import com.netease.lowcode.pdf.extension.utils.FreemarkerUtils;
 import com.netease.lowcode.pdf.extension.utils.UploadResponseDTO;
 import com.netease.lowcode.core.annotation.NaslLogic;
+import freemarker.template.TemplateException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,13 @@ public class PdfGenerator {
 
     }
 
+    /**
+     * 传入的是模板文件url
+     *
+     * @param jsonData
+     * @param templateUrl
+     * @return
+     */
     @NaslLogic
     public static BaseResponse createPDFV2(String jsonData, String templateUrl) {
         try {
@@ -114,6 +122,44 @@ public class PdfGenerator {
             UploadResponseDTO uploadResponseDTO = FileUtils.uploadStream(uploadStream, jsonObject.getString("fileName"));
 
             return BaseResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult());
+        } catch (Exception e) {
+            return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
+        }
+    }
+
+    /**
+     * 传入的是模板文件json字符串
+     *
+     * @param jsonData
+     * @param jsonTemplate
+     * @return
+     */
+    @NaslLogic
+    public static BaseResponse createPDFV2ByStr(String jsonData, String jsonTemplate) {
+        try {
+            ByteArrayInputStream byteArrayInputStream = FreemarkerUtils.getFreemarkerContentInputStream(jsonData, jsonTemplate);
+            BufferedReader br = new BufferedReader(new InputStreamReader(byteArrayInputStream));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            JSONObject jsonObject = JSONObject.parseObject(sb.toString());
+            ByteArrayOutputStream byteArrayOutputStream = NodeCreator.node(jsonObject);
+            ByteArrayInputStream uploadStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+//             TODO:上传文件
+            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStream(uploadStream, jsonObject.getString("fileName"));
+
+            return BaseResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult());
+
+//            FileOutputStream fos = new FileOutputStream(jsonObject.getString("fileName"));
+//            byte[] buffer = new byte[1024];
+//            int read;
+//            while ((read = uploadStream.read(buffer)) != -1) {
+//                fos.write(buffer, 0, read);
+//            }
+//            return BaseResponse.OK("","");
         } catch (Exception e) {
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }

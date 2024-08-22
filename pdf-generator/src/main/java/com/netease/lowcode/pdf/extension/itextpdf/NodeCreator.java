@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.forms.fields.properties.CheckBoxType;
 import com.itextpdf.forms.form.element.CheckBox;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.CalRgb;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -12,6 +14,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
@@ -106,8 +109,10 @@ public class NodeCreator {
             return null;
         }
         Paragraph paragraph = new Paragraph();
-        if(jsonObject.containsKey("text")){
+        if (jsonObject.containsKey("text")) {
             paragraph.add(jsonObject.getString("text"));
+        } else {
+            paragraph.add("");
         }
         if(jsonObject.containsKey("textAlignment")){
             paragraph.setTextAlignment(TextAlignment.valueOf(jsonObject.getString("textAlignment")));
@@ -124,6 +129,12 @@ public class NodeCreator {
         if(jsonObject.containsKey("fontColor")){
             paragraph.setFontColor(PdfUtils.getColor(jsonObject.getString("fontColor")));
         }
+        // 如果有rgb,将覆盖上面的color
+        if (jsonObject.containsKey("rgb")) {
+            JSONObject rgb = jsonObject.getJSONObject("rgb");
+            paragraph.setFontColor(new DeviceRgb(rgb.getInteger("red"), rgb.getInteger("green"), rgb.getInteger("blue")));
+        }
+
         if(jsonObject.containsKey("marginLeft")){
             paragraph.setMarginLeft(jsonObject.getInteger("marginLeft"));
         }
@@ -224,7 +235,12 @@ public class NodeCreator {
             throw new RuntimeException("cell缺少width");
         }
 
-        Cell cell = new Cell();
+        Cell cell;
+        if (jsonObject.containsKey("rowspan") && jsonObject.containsKey("colspan")) {
+            cell = new Cell(jsonObject.getInteger("rowspan"), jsonObject.getInteger("colspan"));
+        } else {
+            cell = new Cell();
+        }
         cell.setWidth(UnitValue.createPercentValue(jsonObject.getInteger("width")));
 
         if (jsonObject.containsKey("textAlignment")) {
@@ -233,6 +249,25 @@ public class NodeCreator {
 
         if (!jsonObject.containsKey("elements")) {
             return cell;
+        }
+
+        // 去除默认边框
+        if (jsonObject.containsKey("noBorder") && jsonObject.getBoolean("noBorder")) {
+            cell.setBorder(Border.NO_BORDER);
+        }
+
+        // 设置单元格边框
+        if (jsonObject.containsKey("borderBottom")) {
+            cell.setBorderBottom(new SolidBorder(jsonObject.getJSONObject("borderBottom").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderTop")) {
+            cell.setBorderTop(new SolidBorder(jsonObject.getJSONObject("borderTop").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderLeft")) {
+            cell.setBorderLeft(new SolidBorder(jsonObject.getJSONObject("borderLeft").getInteger("width")));
+        }
+        if (jsonObject.containsKey("borderRight")) {
+            cell.setBorderRight(new SolidBorder(jsonObject.getJSONObject("borderRight").getInteger("width")));
         }
 
         JSONArray elements = jsonObject.getJSONArray("elements");
