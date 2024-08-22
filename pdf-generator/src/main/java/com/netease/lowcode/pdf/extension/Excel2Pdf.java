@@ -227,10 +227,11 @@ public class Excel2Pdf {
                 }
             }
 
-            // 处理合并区域
+            // 标记合并区域
             List<CellRangeAddress> mergedRegions = sheet0.getMergedRegions();
             if(CollectionUtils.isNotEmpty(mergedRegions)){
                 for (CellRangeAddress mergedRegion : mergedRegions) {
+                    // 得到的单元格坐标是按照合并前的坐标来计算，因此使用cloneTmpCells
                     int firstRow = mergedRegion.getFirstRow();
                     int lastRow = mergedRegion.getLastRow();
                     int firstColumn = mergedRegion.getFirstColumn();
@@ -249,35 +250,39 @@ public class Excel2Pdf {
                         mergeCell.put("borderBottom", tmpCells.get(firstRow).get(lastColumn).getJSONObject("borderBottom"));
                     }
 
-                    // 处理合并区域第一行
-                    List<JSONObject> first = tmpCells.get(firstRow);
-                    List<JSONObject> newFirst = new ArrayList<>();
-                    for (int i = 0; i < firstColumn; i++) {
-                        newFirst.add(first.get(i));
-                    }
-                    newFirst.add(mergeCell);
-                    for (int i = lastColumn + 1; i < first.size(); i++) {
-                        newFirst.add(first.get(i));
-                    }
-
-                    tmpCells.set(firstRow, newFirst);
-                    // 处理合并区域其他行
-                    for (int i = firstRow + 1; i < lastRow; i++) {
+                    // 处理合并区域
+                    for (int i = firstRow; i <= lastRow; i++) {
                         List<JSONObject> list = tmpCells.get(i);
                         List<JSONObject> newList = new ArrayList<>();
 
+                        for (int j = 0; j < list.size(); j++) {
+                            // 当前行 合并区域处理
+                            if (j >= firstColumn && j <= lastColumn) {
+                                // 合并区域 首行 第一个单元格 填充mergeCell
+                                if (i == firstRow && j == firstColumn) {
+                                    newList.add(mergeCell);
+                                    continue;
+                                }
+                                // 合并区域 其他单元格 用占位标记，后续统一删除
+                                JSONObject e = new JSONObject();
+                                e.put("mergeTagWillBeDeleted", "");
+                                newList.add(e);
+                                continue;
+                            }
 
-                        for (int j = 0; j < firstColumn; j++) {
+                            // 非合并区域 用原始单元格填充
                             newList.add(list.get(j));
                         }
-                        for (int j = lastColumn + 1; j < list.size(); j++) {
-                            newList.add(list.get(j));
-                        }
-                        // 移除被合并单元格
+                        // 替换新行
                         tmpCells.set(i, newList);
                     }
                 }
             }
+            // 移除被合并单元格
+            tmpCells.removeIf(curRow -> {
+                curRow.removeIf(next -> next.containsKey("mergeTagWillBeDeleted"));
+                return curRow.isEmpty();
+            });
 
             // 从全局设置cell宽度
             int totalColWidth = sheetColWidthList.stream().mapToInt(Integer::intValue).sum();

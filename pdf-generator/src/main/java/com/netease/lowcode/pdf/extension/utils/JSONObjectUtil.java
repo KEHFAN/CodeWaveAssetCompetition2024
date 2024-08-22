@@ -88,7 +88,7 @@ public class JSONObjectUtil {
     }
 
 
-    private static List<JSONObject> deepCloneList(List<JSONObject> originList) {
+    public static List<JSONObject> deepCloneList(List<JSONObject> originList) {
         if (CollectionUtils.isEmpty(originList)) {
             return new ArrayList<>();
         }
@@ -96,6 +96,17 @@ public class JSONObjectUtil {
         for (int i = 0; i < originList.size(); i++) {
             JSONObject oriJsonObject = originList.get(i);
             cloneList.add(JSONObject.parseObject(oriJsonObject.toJSONString()));
+        }
+        return cloneList;
+    }
+
+    public static List<List<JSONObject>> deepCloneList2(List<List<JSONObject>> originList) {
+        if (CollectionUtils.isEmpty(originList)) {
+            return new ArrayList<>();
+        }
+        List<List<JSONObject>> cloneList = new ArrayList<>();
+        for (int i = 0; i < originList.size(); i++) {
+            cloneList.add(deepCloneList(originList.get(i)));
         }
         return cloneList;
     }
