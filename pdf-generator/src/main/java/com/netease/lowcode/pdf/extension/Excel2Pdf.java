@@ -247,8 +247,11 @@ public class Excel2Pdf {
                     if (tmpCells.get(firstRow).get(lastColumn).containsKey("borderRight")) {
                         mergeCell.put("borderRight", tmpCells.get(firstRow).get(lastColumn).getJSONObject("borderRight"));
                     }
+                    if (tmpCells.get(lastRow).get(firstColumn).containsKey("borderLeft")) {
+                        mergeCell.put("borderLeft", tmpCells.get(lastRow).get(firstColumn).getJSONObject("borderLeft"));
+                    }
                     if (tmpCells.get(lastRow).get(lastColumn).containsKey("borderBottom")) {
-                        mergeCell.put("borderBottom", tmpCells.get(firstRow).get(lastColumn).getJSONObject("borderBottom"));
+                        mergeCell.put("borderBottom", tmpCells.get(lastRow).get(lastColumn).getJSONObject("borderBottom"));
                     }
 
                     // 处理合并区域
