@@ -75,7 +75,7 @@ public class TemplateUtilsTest {
         item2.put("arr","arr数据2");
         requestList.add(item2);
         requestJsonData.put("list", requestList);
-        Excel2Pdf.handleFreemarkerList(tmpCells, requestJsonData);
+        Excel2Pdf.handleFreemarkerList(tmpCells, requestJsonData.toJSONString());
         System.out.println();
     }
 }

@@ -28,14 +28,9 @@ public class Excel2Pdf {
     public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
 
         try {
-            if(StringUtils.isBlank(request.getJsonData())){
-                return BaseResponse.FAIL("请求数据jsonData为空");
-            }
             if (StringUtils.isBlank(request.getExportFileName()) || !request.getExportFileName().endsWith(".pdf")) {
                 return BaseResponse.FAIL("exportFileName必须以 .pdf 结尾");
             }
-            // 解析参数
-            JSONObject requestJsonData = JSONObject.parseObject(request.getJsonData());
 
             // 下载模板文件
             File templateFile = FileUtils.downloadFile(request.getTemplateUrl());
@@ -310,7 +305,7 @@ public class Excel2Pdf {
             }
 
             // 处理freemarker list
-            handleFreemarkerList(tmpCells,requestJsonData);
+            handleFreemarkerList(tmpCells,request.getJsonData());
 
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
@@ -342,10 +337,13 @@ public class Excel2Pdf {
      *
      * @param tmpCells
      */
-    public static void handleFreemarkerList(List<List<JSONObject>> tmpCells, JSONObject requestJsonData) {
+    public static void handleFreemarkerList(List<List<JSONObject>> tmpCells, String jsonData) {
         if (CollectionUtils.isEmpty(tmpCells)) {
             return;
         }
+
+        // 解析参数
+        JSONObject requestJsonData = null;
 
         int i = 0;
         while (i < tmpCells.size()) {
@@ -368,6 +366,9 @@ public class Excel2Pdf {
 
             // 包含list标签，开始处理
             if (hasFreemarkerListTag) {
+                if (Objects.isNull(requestJsonData)) {
+                    requestJsonData = JSONObject.parseObject(jsonData);
+                }
                 List<List<JSONObject>> newRows = JSONObjectUtil.fillListData(originRow, requestJsonData);
                 // 将originRow 替换为 newRows
                 for (int j = 0; j < newRows.size(); j++) {
