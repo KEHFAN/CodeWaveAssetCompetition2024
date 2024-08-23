@@ -3,11 +3,14 @@ package com.netease.lowcode.pdf.extension.utils;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.font.PdfType0Font;
 import com.netease.lowcode.core.annotation.NaslLogic;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class FontUtils {
@@ -56,6 +59,18 @@ public class FontUtils {
     @NaslLogic
     public static Boolean fontExist(String fontName) {
         return available(fontName);
+    }
+
+    /**
+     * 查看系统字体
+     *
+     * @return
+     */
+    @NaslLogic
+    public static List<String> availableFonts() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] fontFamilyNames = ge.getAvailableFontFamilyNames();
+        return Arrays.asList(fontFamilyNames);
     }
 
 }
