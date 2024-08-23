@@ -6,6 +6,7 @@ import com.netease.lowcode.core.annotation.NaslLogic;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import com.netease.lowcode.pdf.extension.structures.CreateByXlsxRequest;
 import com.netease.lowcode.pdf.extension.utils.FileUtils;
+import com.netease.lowcode.pdf.extension.utils.FontUtils;
 import com.netease.lowcode.pdf.extension.utils.JSONObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,10 +50,14 @@ public class Excel2Pdf {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("fileName",request.getExportFileName());
             // 字体设置
-            jsonObject.put("font",new HashMap<String,String>(){{
-                put("fontProgram","STSong-Light");
-                put("encoding","UniGB-UCS2-H");
-            }});
+            HashMap<String, String> fontHashMap = new HashMap<>();
+            fontHashMap.put("fontProgram",request.getFontPath());
+            jsonObject.put("font", fontHashMap);
+
+            if (!FontUtils.available(request.getFontPath())) {
+                return BaseResponse.FAIL(String.format("字体不存在，请上传字体文件或更换字体，字体: %s", request.getFontPath()));
+            }
+
             // 纸张大小A4
             jsonObject.put("pageSize",request.getPageSize());
             // 纸张方向
