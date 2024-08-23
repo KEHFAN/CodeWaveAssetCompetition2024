@@ -57,11 +57,14 @@ public class NodeCreator {
 
         Document document = new Document(pdfDocument);
 
-        if (!jsonObject.containsKey("font")) {
-            throw new RuntimeException("字体font配置为空");
+        // 设置全局字体
+        JSONObject fontJSONObject;
+        if (Objects.nonNull((fontJSONObject = jsonObject.getJSONObject("font")))
+                && fontJSONObject.containsKey("fontProgram") && fontJSONObject.containsKey("encoding")) {
+            document.setFont(PdfFontFactory.createFont(fontJSONObject.getString("fontProgram"), fontJSONObject.getString("encoding")));
+        } else {
+            document.setFont(FontUtils.createFont(null));
         }
-        JSONObject fontJSONObject = jsonObject.getJSONObject("font");
-        document.setFont(FontUtils.createFont(fontJSONObject.getString("fontProgram"), fontJSONObject.getString("encoding")));
 
         if (jsonObject.containsKey("fontSize")) {
             document.setFontSize(jsonObject.getFloat("fontSize"));
@@ -124,6 +127,10 @@ public class NodeCreator {
         }
         if(jsonObject.containsKey("fontSize")){
             paragraph.setFontSize(jsonObject.getInteger("fontSize"));
+        }
+        // 设置段落字体
+        if (jsonObject.containsKey("fontName")) {
+            paragraph.setFont(FontUtils.createFont(jsonObject.getString("fontName")));
         }
         if (jsonObject.containsKey("bold") && jsonObject.getBoolean("bold")) {
             paragraph.setBold();

@@ -49,14 +49,6 @@ public class Excel2Pdf {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("fileName",request.getExportFileName());
-            // 字体设置
-            HashMap<String, String> fontHashMap = new HashMap<>();
-            fontHashMap.put("fontProgram",request.getFontPath());
-            jsonObject.put("font", fontHashMap);
-
-            if (!FontUtils.available(request.getFontPath())) {
-                return BaseResponse.FAIL(String.format("字体不存在，请上传字体文件或更换字体，字体: %s", request.getFontPath()));
-            }
 
             // 纸张大小A4
             jsonObject.put("pageSize",request.getPageSize());
@@ -135,6 +127,8 @@ public class Excel2Pdf {
                                 }
                             });
                         }
+                        // 设置单元格字体
+                        paragraph.put("fontName", xssfFont.getFontName());
                     }
                     // 字体大小
                     short fontSize = font.getFontHeightInPoints();
