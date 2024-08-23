@@ -11,6 +11,8 @@ public class CreateByXlsxRequest {
     public String pageSize = "A4";
     // 纸张方向，默认纵向
     public Boolean rotate = false;
+    // 字体文件路径
+    public String fontPath;
 
     public Boolean getRotate() {
         return rotate;
@@ -50,5 +52,13 @@ public class CreateByXlsxRequest {
 
     public void setExportFileName(String exportFileName) {
         this.exportFileName = exportFileName;
+    }
+
+    public String getFontPath() {
+        return fontPath;
+    }
+
+    public void setFontPath(String fontPath) {
+        this.fontPath = fontPath;
     }
 }

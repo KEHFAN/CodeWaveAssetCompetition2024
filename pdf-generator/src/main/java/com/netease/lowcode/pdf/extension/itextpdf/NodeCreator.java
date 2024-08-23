@@ -20,6 +20,7 @@ import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.netease.lowcode.pdf.extension.structures.NodeTypeEnum;
+import com.netease.lowcode.pdf.extension.utils.FontUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import sun.misc.BASE64Decoder;
@@ -56,8 +57,12 @@ public class NodeCreator {
 
         Document document = new Document(pdfDocument);
 
+        if (!jsonObject.containsKey("font")) {
+            throw new RuntimeException("字体font配置为空");
+        }
         JSONObject fontJSONObject = jsonObject.getJSONObject("font");
-        document.setFont(PdfFontFactory.createFont(fontJSONObject.getString("fontProgram"),fontJSONObject.getString("encoding")));
+        document.setFont(FontUtils.createFont(fontJSONObject.getString("fontProgram"), fontJSONObject.getString("encoding")));
+
         if (jsonObject.containsKey("fontSize")) {
             document.setFontSize(jsonObject.getFloat("fontSize"));
         } else {

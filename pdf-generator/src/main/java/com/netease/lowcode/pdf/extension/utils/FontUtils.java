@@ -22,6 +22,7 @@ public class FontUtils {
                 // ttc字体索引默认0
                 return PdfFontFactory.createTtcFont(fontPath, 0, StringUtils.isBlank(encoding) ? PdfEncodings.IDENTITY_H : encoding, PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED, true);
             }
+            return PdfFontFactory.createFont(fontPath, encoding);
         }
         return PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
     }
