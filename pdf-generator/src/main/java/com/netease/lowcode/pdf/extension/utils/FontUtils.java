@@ -36,7 +36,18 @@ public class FontUtils {
             return createDefaultFont();
         }
 
-        for (Map.Entry<String, SoftReference<FontCache>> entry : registeredFontMap.entrySet()) {
+        try {
+            // 解析excel获取的font信息可能与注册的名称不匹配，这里不做处理了
+            PdfFont registeredFont = PdfFontFactory.createRegisteredFont(font);
+            if (Objects.nonNull(registeredFont)) {
+                return registeredFont;
+            }
+        } catch (IOException e) {
+            // 不做处理
+        }
+
+        // 以下会导致oom
+        /*for (Map.Entry<String, SoftReference<FontCache>> entry : registeredFontMap.entrySet()) {
             FontCache fontCache = entry.getValue().get();
             // 已被回收
             if (Objects.isNull(fontCache)) {
@@ -70,7 +81,7 @@ public class FontUtils {
                     break;
                 }
             }
-        }
+        }*/
 
         return createDefaultFont();
     }

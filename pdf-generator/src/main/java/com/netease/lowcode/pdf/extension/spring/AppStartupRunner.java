@@ -20,7 +20,8 @@ public class AppStartupRunner implements CommandLineRunner {
         // 注册系统字体
         PdfFontFactory.registerSystemDirectories();
         // 获取已注册字体集合
-        Set<String> registeredFonts = PdfFontFactory.getRegisteredFonts();
+        // 以下会导致oom
+        /*Set<String> registeredFonts = PdfFontFactory.getRegisteredFonts();
         if (CollectionUtils.isEmpty(registeredFonts)) {
             return;
         }
@@ -46,6 +47,6 @@ public class AppStartupRunner implements CommandLineRunner {
             // 应用刚启动时多触发几次gc对于普通应用也可以接受,对于高并发应用,启动后建议设置一段流量禁止期+逐步引流
             pdfFont = null;
             System.gc();
-        }
+        }*/
     }
 }
