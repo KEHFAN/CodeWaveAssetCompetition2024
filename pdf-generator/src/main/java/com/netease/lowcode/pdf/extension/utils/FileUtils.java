@@ -2,6 +2,7 @@ package com.netease.lowcode.pdf.extension.utils;
 
 import com.alibaba.fastjson2.JSON;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,7 +152,17 @@ public class FileUtils {
         headers.put("cache-control", httpServletRequest.getHeader("cache-control"));
         // headers.put("content-length", httpServletRequest.getHeader("Accept"));
         headers.put("content-type", httpServletRequest.getHeader("content-type"));
-        headers.put("cookie", httpServletRequest.getHeader("cookie"));
+        String cookie = httpServletRequest.getHeader("cookie");
+        if (StringUtils.isNotBlank(cookie)) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : StringUtils.split(cookie, "; ")) {
+                if (s.startsWith("locale=") || s.startsWith("wyy_uid=") || s.startsWith("domain_authorization=")) {
+                    sb.append(s).append("; ");
+                }
+            }
+            cookie = sb.substring(0, sb.length() - 2);
+        }
+        headers.put("cookie", cookie);
         headers.put("domainname", httpServletRequest.getHeader("domainname"));
         headers.put("host", httpServletRequest.getHeader("host"));
         headers.put("origin", httpServletRequest.getHeader("origin"));
