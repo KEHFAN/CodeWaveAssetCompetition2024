@@ -31,8 +31,8 @@ public class FontUtils {
     }
 
     public static PdfFont createFont(String font) {
-
-        if (StringUtils.isBlank(font) || MapUtils.isEmpty(registeredFontMap)) {
+        System.out.println("字体信息: " + font);
+        if (StringUtils.isBlank(font)) {
             return createDefaultFont();
         }
 
