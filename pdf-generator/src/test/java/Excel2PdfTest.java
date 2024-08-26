@@ -10,7 +10,7 @@ import java.io.*;
 
 public class Excel2PdfTest {
 
-    public static void main1(String[] args) {
+    public static void main(String[] args) {
         String s = "{\n" +
                 "    \"name\":\"测试名字\",\n" +
                 "    \"list\":[\n" +
@@ -34,7 +34,7 @@ public class Excel2PdfTest {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
         request.setJsonData(s);
         request.setExportFileName("测试.pdf");
-        request.setTemplateUrl("https://dev-excel2pdf-kehfan.app.codewave.163.com:443/upload/app/4c1cce32-ed6c-4659-878d-2b5ab749e24d/白贝壳测试模板_20240822114115167.xlsx");
+        request.setTemplateUrl("https://dev-excel2pdf-kehfan.app.codewave.163.com:443/upload/app/4c1cce32-ed6c-4659-878d-2b5ab749e24d/新建XLSX工作表_20240823175418847.xlsx");
         BaseResponse baseResponse = Excel2Pdf.xlsx2pdf(request);
         System.out.println(baseResponse);
     }
@@ -65,7 +65,7 @@ public class Excel2PdfTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main3(String[] args) {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
 
         Excel2Pdf.xlsx2pdf(request);

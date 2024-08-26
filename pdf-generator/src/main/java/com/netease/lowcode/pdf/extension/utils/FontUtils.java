@@ -4,17 +4,23 @@ import com.itextpdf.io.font.FontNames;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.netease.lowcode.core.annotation.NaslLogic;
-import org.apache.commons.collections4.CollectionUtils;
+import com.netease.lowcode.pdf.extension.spring.FontCache;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FontUtils {
+
+    // 将所有字体创建出来 可能造成 oom ,因此仅标记字体
+    public static Map<String, SoftReference<FontCache>> registeredFontMap = new ConcurrentHashMap<>();
 
     public static PdfFont createDefaultFont() {
         try {
@@ -26,63 +32,65 @@ public class FontUtils {
 
     public static PdfFont createFont(String font) {
 
-        if (StringUtils.isBlank(font)) {
+        if (StringUtils.isBlank(font) || MapUtils.isEmpty(registeredFontMap)) {
             return createDefaultFont();
         }
 
-        // 注册系统字体
-        PdfFontFactory.registerSystemDirectories();
-        // 获取已注册字体集合
-        Set<String> registeredFonts = PdfFontFactory.getRegisteredFonts();
-
-        if(CollectionUtils.isEmpty(registeredFonts)){
-            return createDefaultFont();
-        }
-
-        for (String registeredFont : registeredFonts) {
-            try {
-                PdfFont pdfFont = PdfFontFactory.createRegisteredFont(registeredFont);
-                FontNames fontNames = pdfFont.getFontProgram().getFontNames();
-                String[][] fullName = fontNames.getFullName();
-                PdfFont tmp = compareName(fullName, font, pdfFont);
-                if (Objects.nonNull(tmp)) return tmp;
-
-                String fontName = fontNames.getFontName();
-                if (StringUtils.equalsIgnoreCase(fontName, font)) {
-                    return pdfFont;
+        for (Map.Entry<String, SoftReference<FontCache>> entry : registeredFontMap.entrySet()) {
+            FontCache fontCache = entry.getValue().get();
+            // 已被回收
+            if (Objects.isNull(fontCache)) {
+                PdfFont pdfFont = null;
+                try {
+                    pdfFont = PdfFontFactory.createRegisteredFont(entry.getKey());
+                } catch (IOException e) {
+                    // do nothing
                 }
-
-                String[][] familyName = fontNames.getFamilyName();
-                tmp = compareName(familyName, font, pdfFont);
-                if (Objects.nonNull(tmp)) return tmp;
-                String[][] familyName2 = fontNames.getFamilyName2();
-                tmp = compareName(familyName2, font, pdfFont);
-                if (Objects.nonNull(tmp)) return tmp;
-
-            } catch (Exception e) {
-                // do nothing
+                if (Objects.isNull(pdfFont)) {
+                    continue;
+                }
+                FontNames fontNames = pdfFont.getFontProgram().getFontNames();
+                fontCache = new FontCache();
+                fontCache.setFullName(fontNames.getFullName());
+                fontCache.setFontName(fontNames.getFontName());
+                fontCache.setFamilyName(fontNames.getFamilyName());
+                fontCache.setFamilyName2(fontNames.getFamilyName2());
+                entry.setValue(new SoftReference<>(fontCache));
+                pdfFont = null;
+            }
+            String[][] fullName = fontCache.getFullName();
+            String fontName = fontCache.getFontName();
+            String[][] familyName = fontCache.getFamilyName();
+            String[][] familyName2 = fontCache.getFamilyName2();
+            if (compareName(fullName, font) || StringUtils.equalsIgnoreCase(fontName, font) || compareName(familyName, font) || compareName(familyName2, font)) {
+                try {
+                    return PdfFontFactory.createRegisteredFont(entry.getKey());
+                } catch (IOException e) {
+                    // do nothing
+                    break;
+                }
             }
         }
 
         return createDefaultFont();
     }
 
-    private static PdfFont compareName(String[][] names, String fontName, PdfFont pdfFont) {
-        if (Objects.isNull(names) || StringUtils.isBlank(fontName)) {
-            return null;
+    private static boolean compareName(String[][] names, String font) {
+        if (Objects.isNull(names) || StringUtils.isBlank(font)) {
+            return false;
         }
         for (String[] name : names) {
             if (Objects.isNull(name)) {
                 continue;
             }
             for (String s : name) {
-                if (StringUtils.equalsIgnoreCase(s, fontName)) {
-                    return pdfFont;
+                if (StringUtils.equalsIgnoreCase(s, font)) {
+                    return true;
                 }
             }
         }
 
-        return null;
+        return false;
     }
 
     /**

@@ -112,6 +112,7 @@ public class FileUtils {
                 .addFormDataPart("file", fileName, requestBody)
                 .build();
 
+        // todo : 获取原来的cookie 加进来
         Request request = new Request.Builder()
                 .url(uploadUrl)
                 .post(multipartBody)
