@@ -156,11 +156,16 @@ public class FileUtils {
         if (StringUtils.isNotBlank(cookie)) {
             StringBuilder sb = new StringBuilder();
             for (String s : StringUtils.split(cookie, "; ")) {
-                if (s.startsWith("locale=") || s.startsWith("wyy_uid=") || s.startsWith("domain_authorization=")) {
+                if (s.startsWith("locale=") ||
+                        s.startsWith("wyy_uid=") ||
+                        s.startsWith("domain_authorization=") ||
+                        s.contains("auth")) {
                     sb.append(s).append("; ");
                 }
             }
-            cookie = sb.substring(0, sb.length() - 2);
+            if (sb.length() > 2) {
+                cookie = sb.substring(0, sb.length() - 2);
+            }
         }
         headers.put("cookie", cookie);
         headers.put("domainname", httpServletRequest.getHeader("domainname"));
