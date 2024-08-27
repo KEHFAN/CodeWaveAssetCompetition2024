@@ -211,6 +211,7 @@ public class NodeCreator {
         Integer columnSize = jsonObject.getInteger("columnSize");
         JSONArray cellArray = jsonObject.getJSONArray("cells");
         List<JSONObject> cellList = cellArray.toJavaList(JSONObject.class);
+        logger.info("table 单元格数量:{}", cellList.size());
         // 获取分块数量,表格将在水平方向上扩展
         if (jsonObject.containsKey("chunkSize")) {
 
