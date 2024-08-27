@@ -23,6 +23,8 @@ import com.netease.lowcode.pdf.extension.structures.NodeTypeEnum;
 import com.netease.lowcode.pdf.extension.utils.FontUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
@@ -32,6 +34,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class NodeCreator {
+
+    private static final Logger logger = LoggerFactory.getLogger(NodeCreator.class);
 
     public static ByteArrayOutputStream node(JSONObject jsonObject) throws IOException {
 
@@ -89,21 +93,26 @@ public class NodeCreator {
         JSONArray nodes = jsonObject.getJSONArray("nodes");
 
         if (Objects.isNull(nodes)) {
+            logger.info("节点为空");
             document.close();
             return byteArrayOutputStream;
         }
 
+        logger.info("开始处理节点, 节点数: {}",nodes.size());
         nodes.toJavaList(JSONObject.class).forEach(nodeObj -> {
             if ("Image".equalsIgnoreCase(nodeObj.getString("type"))) {
                 // 文档插入图片
+                logger.info("处理图片节点");
                 document.add(image(nodeObj));
             } else if ("AreaBreak".equalsIgnoreCase(nodeObj.getString("type"))) {
                 // 文档分页
+                logger.info("处理areaBreak节点");
                 document.add(areaBreak());
             } else {
                 document.add(NodeTypeEnum.valueOf(nodeObj.getString("type")).exec(nodeObj));
             }
         });
+        logger.info("节点处理结束");
 
         document.close();
         return byteArrayOutputStream;
@@ -193,6 +202,7 @@ public class NodeCreator {
     }
 
     public static Table table(JSONObject jsonObject){
+        logger.info("开始处理table节点");
         if(Objects.isNull(jsonObject)){
             return null;
         }
@@ -235,6 +245,7 @@ public class NodeCreator {
         Table table = new Table(columnSize);
         table.setWidth(UnitValue.createPercentValue(width));
         cellList.forEach(obj -> table.addCell(NodeCreator.cell(obj)));
+        logger.info("table节点处理结束");
         return table;
     }
 

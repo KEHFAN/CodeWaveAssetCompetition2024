@@ -5,6 +5,8 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.netease.lowcode.pdf.extension.utils.FontUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +17,12 @@ import java.util.Set;
 @Component
 public class AppStartupRunner implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(AppStartupRunner.class);
+
     @Override
     public void run(String... args) throws Exception {
         // 注册系统字体
+        logger.info("注册系统字体文件");
         PdfFontFactory.registerSystemDirectories();
         // 获取已注册字体集合
         // 以下会导致oom
