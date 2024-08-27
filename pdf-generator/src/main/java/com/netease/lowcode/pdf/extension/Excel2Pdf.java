@@ -32,6 +32,12 @@ public class Excel2Pdf {
     public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
 
         try {
+            if (request.getAsync()) {
+                request.setAsync(false);
+                // todo: 调用线程池
+                return xlsx2pdf(request);
+            }
+
             if (StringUtils.isBlank(request.getExportFileName()) || !request.getExportFileName().endsWith(".pdf")) {
                 return BaseResponse.FAIL("exportFileName必须以 .pdf 结尾");
             }

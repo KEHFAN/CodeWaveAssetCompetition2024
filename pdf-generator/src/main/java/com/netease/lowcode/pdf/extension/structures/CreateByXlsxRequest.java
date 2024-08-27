@@ -11,6 +11,8 @@ public class CreateByXlsxRequest {
     public String pageSize = "A4";
     // 纸张方向，默认纵向
     public Boolean rotate = false;
+    // 异步执行，默认false
+    public Boolean async = false;
 
     public Boolean getRotate() {
         return rotate;
@@ -50,5 +52,13 @@ public class CreateByXlsxRequest {
 
     public void setExportFileName(String exportFileName) {
         this.exportFileName = exportFileName;
+    }
+
+    public Boolean getAsync() {
+        return async;
+    }
+
+    public void setAsync(Boolean async) {
+        this.async = async;
     }
 }
