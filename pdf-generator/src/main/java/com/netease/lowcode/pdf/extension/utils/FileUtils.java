@@ -2,6 +2,7 @@ package com.netease.lowcode.pdf.extension.utils;
 
 import com.alibaba.fastjson2.JSON;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +19,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Component("pdfGeneratorFileUtils")
 public class FileUtils {
@@ -122,6 +121,73 @@ public class FileUtils {
             return JSON.parseObject(response.body().string(), UploadResponseDTO.class);
         }
         throw new RuntimeException(String.format("文件上传失败,%s",response));
+    }
+
+    public static UploadResponseDTO uploadStreamV2(InputStream inputStream, String fileName) throws IOException {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String uploadUrl = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" +
+                httpServletRequest.getServerPort() + "/upload";
+
+        byte[] fileBytes;
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            int read;
+            byte[] data = new byte[1024];
+            while ((read = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, read);
+            }
+            buffer.flush();
+            fileBytes = buffer.toByteArray();
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("lcapIsCompress", "false")
+                .addFormDataPart("viaOriginURL", "false")
+                .addFormDataPart("file", fileName, RequestBody.create(MediaType.parse("application/octet-stream"), fileBytes))
+                .build();
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("accept", httpServletRequest.getHeader("accept"));
+        headers.put("accept-language", httpServletRequest.getHeader("accept-language"));
+        headers.put("cache-control", httpServletRequest.getHeader("cache-control"));
+        // headers.put("content-length", httpServletRequest.getHeader("Accept"));
+        headers.put("content-type", httpServletRequest.getHeader("content-type"));
+        String cookie = httpServletRequest.getHeader("cookie");
+        if (StringUtils.isNotBlank(cookie)) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : StringUtils.split(cookie, "; ")) {
+                if (s.startsWith("locale=") ||
+                        s.startsWith("wyy_uid=") ||
+                        s.startsWith("domain_authorization=") ||
+                        s.contains("auth")) {
+                    sb.append(s).append("; ");
+                }
+            }
+            if (sb.length() > 2) {
+                cookie = sb.substring(0, sb.length() - 2);
+            }
+        }
+        headers.put("cookie", cookie);
+        headers.put("domainname", httpServletRequest.getHeader("domainname"));
+        headers.put("host", httpServletRequest.getHeader("host"));
+        headers.put("origin", httpServletRequest.getHeader("origin"));
+        headers.put("pragma", httpServletRequest.getHeader("pragma"));
+        headers.put("referer", httpServletRequest.getHeader("referer"));
+        headers.put("user-agent", httpServletRequest.getHeader("user-agent"));
+        headers.entrySet().removeIf(entry -> Objects.isNull(entry.getValue()));
+        Request request = new Request.Builder()
+                .url(uploadUrl)
+                .post(requestBody)
+                .headers(Headers.of(headers))
+                .build();
+        Call call = client.newCall(request);
+        Response response = call.execute();
+        if (response.isSuccessful()) {
+            byte[] bytes = response.body().bytes();
+            System.out.println("响应结果: " + new String(bytes, StandardCharsets.UTF_8));
+            return JSON.parseObject(new String(bytes, StandardCharsets.UTF_8), UploadResponseDTO.class);
+        }
+        throw new RuntimeException(String.format("文件上传失败,%s", response));
     }
 
     public static File downloadFile(String urlStr) throws IOException {

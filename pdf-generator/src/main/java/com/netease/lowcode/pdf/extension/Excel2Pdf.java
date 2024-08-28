@@ -6,14 +6,18 @@ import com.netease.lowcode.core.annotation.NaslLogic;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import com.netease.lowcode.pdf.extension.structures.CreateByXlsxRequest;
 import com.netease.lowcode.pdf.extension.utils.FileUtils;
+import com.netease.lowcode.pdf.extension.utils.FontUtils;
 import com.netease.lowcode.pdf.extension.utils.JSONObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,17 +27,26 @@ import java.util.*;
 
 public class Excel2Pdf {
 
+    private static final Logger logger = LoggerFactory.getLogger(Excel2Pdf.class);
 
     @NaslLogic
     public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
 
         try {
+            if (request.getAsync()) {
+                request.setAsync(false);
+                // todo: 调用线程池
+                return xlsx2pdf(request);
+            }
+
             if (StringUtils.isBlank(request.getExportFileName()) || !request.getExportFileName().endsWith(".pdf")) {
                 return BaseResponse.FAIL("exportFileName必须以 .pdf 结尾");
             }
 
             // 下载模板文件
+            logger.info("开始下载模板文件:{}", request.getTemplateUrl());
             File templateFile = FileUtils.downloadFile(request.getTemplateUrl());
+            logger.info("模板文件下载成功!");
 
             String fileName = templateFile.getName();
             InputStream inputStream = new FileInputStream(templateFile);
@@ -43,16 +56,13 @@ public class Excel2Pdf {
                 // 解析 *.xlsx
                 wb = new XSSFWorkbook(inputStream);
             } else {
+                logger.error("xlsx2pdf不支持解析 *.xls 文件,文件名：{}",fileName);
                 return BaseResponse.FAIL("仅支持 *.xlsx 文件");
             }
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("fileName",request.getExportFileName());
-            // 字体设置
-            jsonObject.put("font",new HashMap<String,String>(){{
-                put("fontProgram","STSong-Light");
-                put("encoding","UniGB-UCS2-H");
-            }});
+
             // 纸张大小A4
             jsonObject.put("pageSize",request.getPageSize());
             // 纸张方向
@@ -63,6 +73,7 @@ public class Excel2Pdf {
             // 读取第0个sheet
             Sheet sheet0 = wb.getSheetAt(0);
             if (Objects.isNull(sheet0)) {
+                logger.error("sheet为空");
                 return BaseResponse.FAIL("读取sheet0为空");
             }
 
@@ -80,7 +91,15 @@ public class Excel2Pdf {
             List<List<JSONObject>> tmpCells = new ArrayList<>();
 
             // 遍历sheet行
+            logger.info("开始遍历sheet行: {}",sheet0.getLastRowNum());
             for (int i = 0; i <= sheet0.getLastRowNum(); i++) {
+
+                // 判断是否结束读取
+                if (Objects.nonNull(request.getLastRowNum()) && i>request.getLastRowNum()) {
+                    logger.info("读取到限定行 rowNm={}，结束", request.getLastRowNum());
+                    break;
+                }
+
                 Row row = sheet0.getRow(i);
                 // 暂存该行单元格
                 List<JSONObject> curRowTmpCells = new ArrayList<>();
@@ -94,6 +113,11 @@ public class Excel2Pdf {
                 List<Integer> currentRowColWidths = new ArrayList<>();
                 // 遍历列，注意模板不要超过A4的宽度
                 for (int j = 0; j < row.getLastCellNum(); j++) {
+
+                    // 判断限定列
+                    if (StringUtils.isNotBlank(request.getLastColLabel()) && j>CellReference.convertColStringToIndex(request.getLastColLabel())) {
+                        break;
+                    }
 
                     JSONObject jsonCell = new JSONObject();
                     JSONArray elements = new JSONArray();
@@ -130,6 +154,8 @@ public class Excel2Pdf {
                                 }
                             });
                         }
+                        // 设置单元格字体
+                        paragraph.put("fontName", xssfFont.getFontName());
                     }
                     // 字体大小
                     short fontSize = font.getFontHeightInPoints();
@@ -207,6 +233,7 @@ public class Excel2Pdf {
                 }
             }
             // 单元格末尾对齐填充
+            logger.info("单元格对齐填充");
             int maxSize = tmpCells.stream().mapToInt(List::size).max().orElse(0);
             for (List<JSONObject> tmpRow : tmpCells) {
                 if (tmpRow.size() < maxSize) {
@@ -224,6 +251,7 @@ public class Excel2Pdf {
             }
 
             // 标记合并区域
+            logger.info("标记合并区域");
             List<CellRangeAddress> mergedRegions = sheet0.getMergedRegions();
             if(CollectionUtils.isNotEmpty(mergedRegions)){
                 for (CellRangeAddress mergedRegion : mergedRegions) {
@@ -278,12 +306,14 @@ public class Excel2Pdf {
                 }
             }
             // 移除被合并单元格
+            logger.info("移除被合并单元格");
             tmpCells.removeIf(curRow -> {
                 curRow.removeIf(next -> next.containsKey("mergeTagWillBeDeleted"));
                 return curRow.isEmpty();
             });
 
             // 从全局设置cell宽度
+            logger.info("全局设置单元格宽度");
             int totalColWidth = sheetColWidthList.stream().mapToInt(Integer::intValue).sum();
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
@@ -305,7 +335,9 @@ public class Excel2Pdf {
             }
 
             // 处理freemarker list
+            logger.info("开始填充freemarker list标签");
             handleFreemarkerList(tmpCells,request.getJsonData());
+            logger.info("freemarker list 标签解析填充完毕");
 
             for (int i = 0; i < tmpCells.size(); i++) {
                 List<JSONObject> list = tmpCells.get(i);
@@ -321,6 +353,7 @@ public class Excel2Pdf {
             // 由于将整个sheet解析为一个完整的table，因此不再设置chunkSize
             // table.put("chunkSize",2);
 
+            logger.info("开始创建pdf文件");
             BaseResponse response = PdfGenerator.createPDFV2ByStr(request.getJsonData(), jsonObject.toJSONString());
             if (response.getSuccess()) {
                 return BaseResponse.OK(response.filePath, response.result);
@@ -328,6 +361,7 @@ public class Excel2Pdf {
 
             return BaseResponse.FAIL(response.trace, "pdf创建失败:" + response.msg);
         } catch (IOException e) {
+            logger.error("pdf创建失败", e);
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }
     }

@@ -21,6 +21,8 @@ import freemarker.template.TemplateException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,7 @@ import java.util.Objects;
 @Component("libraryPdfGenerator")
 public class PdfGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(PdfGenerator.class);
     private static FileUtils fileUtils;
 
     @Autowired
@@ -137,19 +140,23 @@ public class PdfGenerator {
     @NaslLogic
     public static BaseResponse createPDFV2ByStr(String jsonData, String jsonTemplate) {
         try {
+            logger.info("开始创建freemarker模板");
             ByteArrayInputStream byteArrayInputStream = FreemarkerUtils.getFreemarkerContentInputStream(jsonData, jsonTemplate);
+            logger.info("freemarker模板创建成功");
             BufferedReader br = new BufferedReader(new InputStreamReader(byteArrayInputStream));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
+            logger.info("fastjson解析模板数据");
             JSONObject jsonObject = JSONObject.parseObject(sb.toString());
+            logger.info("开始创建pdf node");
             ByteArrayOutputStream byteArrayOutputStream = NodeCreator.node(jsonObject);
             ByteArrayInputStream uploadStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-
-//             TODO:上传文件
-            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStream(uploadStream, jsonObject.getString("fileName"));
+            // 上传文件
+            logger.info("开始上传pdf文件: {}",jsonObject.getString("fileName"));
+            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStreamV2(uploadStream, jsonObject.getString("fileName"));
 
             return BaseResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult());
 
