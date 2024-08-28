@@ -34,6 +34,8 @@ public class Excel2PdfTest {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
         request.setJsonData(s);
         request.setExportFileName("测试.pdf");
+        request.setLastRowNum(27);
+        request.setLastColLabel("H");
         request.setTemplateUrl("http://dev.erp.fx.lcap.163yun.com/upload/app/fa9c98b7-cc09-42bb-ba17-f65cc8bca381/导出pdf模板_20240828155248152.xlsx");
         BaseResponse baseResponse = Excel2Pdf.xlsx2pdf(request);
         System.out.println(baseResponse);

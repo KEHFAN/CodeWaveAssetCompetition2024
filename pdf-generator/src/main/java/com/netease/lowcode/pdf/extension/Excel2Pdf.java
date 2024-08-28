@@ -95,7 +95,7 @@ public class Excel2Pdf {
             for (int i = 0; i <= sheet0.getLastRowNum(); i++) {
 
                 // 判断是否结束读取
-                if (Objects.nonNull(request.getLastRowNum()) && request.getLastRowNum() > i) {
+                if (Objects.nonNull(request.getLastRowNum()) && i>request.getLastRowNum()) {
                     logger.info("读取到限定行 rowNm={}，结束", request.getLastRowNum());
                     break;
                 }
@@ -115,7 +115,7 @@ public class Excel2Pdf {
                 for (int j = 0; j < row.getLastCellNum(); j++) {
 
                     // 判断限定列
-                    if (StringUtils.isNotBlank(request.getLastColLabel()) && CellReference.convertColStringToIndex(request.getLastColLabel()) > j) {
+                    if (StringUtils.isNotBlank(request.getLastColLabel()) && j>CellReference.convertColStringToIndex(request.getLastColLabel())) {
                         break;
                     }
 
