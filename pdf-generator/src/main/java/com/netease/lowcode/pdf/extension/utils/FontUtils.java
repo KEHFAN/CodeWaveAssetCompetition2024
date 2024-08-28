@@ -21,19 +21,12 @@ public class FontUtils {
 
     // 将所有字体创建出来 可能造成 oom ,因此仅标记字体
     public static Map<String, SoftReference<FontCache>> registeredFontMap = new ConcurrentHashMap<>();
+    // 不同pdf文档无法共用字体对象 Pdf indirect object belongs to other PDF document. Copy object to current pdf document
     public static Map<String,SoftReference<PdfFont>> fontCacheMap = new ConcurrentHashMap<>();
 
     public static PdfFont createDefaultFont() {
         try {
-            if (fontCacheMap.containsKey("STSong-Light")) {
-                PdfFont pdfFont = fontCacheMap.get("STSong-Light").get();
-                if (Objects.nonNull(pdfFont)) {
-                    return pdfFont;
-                }
-            }
-            PdfFont pdfFont = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
-            fontCacheMap.put("STSong-Light", new SoftReference<>(pdfFont));
-            return pdfFont;
+            return PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,18 +38,10 @@ public class FontUtils {
         }
 
         try {
-            // 这里缓存一下创建的对象 避免每个cell都创建
-            if (fontCacheMap.containsKey(font)) {
-                PdfFont pdfFont = fontCacheMap.get(font).get();
-                if (Objects.nonNull(pdfFont)) {
-                    return pdfFont;
-                }
-            }
 
             // 解析excel获取的font信息可能与注册的名称不匹配，这里不做处理了
             PdfFont registeredFont = PdfFontFactory.createRegisteredFont(font);
             if (Objects.nonNull(registeredFont)) {
-                fontCacheMap.put(font, new SoftReference<>(registeredFont));
                 return registeredFont;
             }
         } catch (IOException e) {

@@ -361,6 +361,7 @@ public class Excel2Pdf {
 
             return BaseResponse.FAIL(response.trace, "pdf创建失败:" + response.msg);
         } catch (IOException e) {
+            logger.error("pdf创建失败", e);
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
         }
     }
