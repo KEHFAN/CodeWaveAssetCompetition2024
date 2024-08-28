@@ -13,6 +13,9 @@ public class CreateByXlsxRequest {
     public Boolean rotate = false;
     // 异步执行，默认false
     public Boolean async = false;
+    // [可选]限定读取范围，防止读取大量空白行
+    public Integer lastRowNum;
+    public String lastColLabel;
 
     public Boolean getRotate() {
         return rotate;
@@ -60,5 +63,21 @@ public class CreateByXlsxRequest {
 
     public void setAsync(Boolean async) {
         this.async = async;
+    }
+
+    public Integer getLastRowNum() {
+        return lastRowNum;
+    }
+
+    public void setLastRowNum(Integer lastRowNum) {
+        this.lastRowNum = lastRowNum;
+    }
+
+    public String getLastColLabel() {
+        return lastColLabel;
+    }
+
+    public void setLastColLabel(String lastColLabel) {
+        this.lastColLabel = lastColLabel;
     }
 }

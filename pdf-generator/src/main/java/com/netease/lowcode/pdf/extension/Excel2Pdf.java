@@ -12,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -92,6 +93,13 @@ public class Excel2Pdf {
             // 遍历sheet行
             logger.info("开始遍历sheet行: {}",sheet0.getLastRowNum());
             for (int i = 0; i <= sheet0.getLastRowNum(); i++) {
+
+                // 判断是否结束读取
+                if (Objects.nonNull(request.getLastRowNum()) && request.getLastRowNum() > i) {
+                    logger.info("读取到限定行 rowNm={}，结束", request.getLastRowNum());
+                    break;
+                }
+
                 Row row = sheet0.getRow(i);
                 // 暂存该行单元格
                 List<JSONObject> curRowTmpCells = new ArrayList<>();
@@ -105,6 +113,11 @@ public class Excel2Pdf {
                 List<Integer> currentRowColWidths = new ArrayList<>();
                 // 遍历列，注意模板不要超过A4的宽度
                 for (int j = 0; j < row.getLastCellNum(); j++) {
+
+                    // 判断限定列
+                    if (StringUtils.isNotBlank(request.getLastColLabel()) && CellReference.convertColStringToIndex(request.getLastColLabel()) > j) {
+                        break;
+                    }
 
                     JSONObject jsonCell = new JSONObject();
                     JSONArray elements = new JSONArray();
