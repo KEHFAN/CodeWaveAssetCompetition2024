@@ -80,6 +80,14 @@ public class CreateByXlsxRequest {
     public String pageSize = "A4";
     // 纸张方向，默认纵向
     public Boolean rotate = false;
+    // 异步执行，默认false(预留参数 当前填哪个都是同步)
+    public Boolean async = false;
+    // [可选]限定读取范围，防止读取大量空白行
+    // 如果不设置就会读取所有行列，当存在大量空白格时可能造成oom
+    // 限定行，填模板excel左侧的行号 1,2,3,......
+    public Integer lastRowNum;
+    // 限定列，填模板excel顶部的列标签 A,B,C,......
+    public String lastColLabel;
 }
 ```
 
