@@ -33,7 +33,13 @@ public class Excel2Pdf {
     public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
 
         try {
-            if (request.getAsync()) {
+            if (Objects.isNull(request.getRotate())) {
+                request.setRotate(false);
+            }
+            if (StringUtils.isBlank(request.getPageSize())) {
+                request.setPageSize("A4");
+            }
+            if (Objects.nonNull(request.getAsync()) && request.getAsync()) {
                 request.setAsync(false);
                 // todo: 调用线程池
                 return xlsx2pdf(request);
