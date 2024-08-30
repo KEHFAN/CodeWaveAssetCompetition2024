@@ -4,9 +4,12 @@ import com.alibaba.fastjson2.JSON;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -25,6 +28,8 @@ import java.util.*;
 @Component("pdfGeneratorFileUtils")
 public class FileUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
+
     @Value("${lcp.upload.sinkType}")
     private String sinkType;
     @Value("${lcp.upload.sinkPath}")
@@ -34,6 +39,8 @@ public class FileUtils {
 
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private Environment env;
 
     public static String DEFAULT_TEMPLATE_DIR = "/data/template";
 
@@ -125,9 +132,10 @@ public class FileUtils {
 
     public static UploadResponseDTO uploadStreamV2(InputStream inputStream, String fileName) throws IOException {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String uploadUrl = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" +
-                httpServletRequest.getServerPort() + "/upload";
-
+        String uploadUrl = httpServletRequest.getScheme() + "://" + "127.0.0.1:8080" + "/upload";
+        logger.info("内部地址:{}",uploadUrl);
+        // http是域名80端口，https可能是域名443 验证下，然后替换地址
+        logger.info("外部地址:{}",uploadUrl.replace("127.0.0.1:8080",httpServletRequest.getServerName()+":"+httpServletRequest.getServerPort()));
         byte[] fileBytes;
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int read;
@@ -184,9 +192,10 @@ public class FileUtils {
         Response response = call.execute();
         if (response.isSuccessful()) {
             byte[] bytes = response.body().bytes();
-            System.out.println("响应结果: " + new String(bytes, StandardCharsets.UTF_8));
+            logger.info("响应结果: {}",new String(bytes, StandardCharsets.UTF_8));
             return JSON.parseObject(new String(bytes, StandardCharsets.UTF_8), UploadResponseDTO.class);
         }
+        logger.error("文件上传失败,{}",response);
         throw new RuntimeException(String.format("文件上传失败,%s", response));
     }
 
