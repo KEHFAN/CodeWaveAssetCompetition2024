@@ -99,7 +99,13 @@ public class NodeCreator {
         }
 
         logger.info("开始处理节点, 节点数: {}",nodes.size());
+        PageSize finalPageSize = pageSize;
         nodes.toJavaList(JSONObject.class).forEach(nodeObj -> {
+
+            // 传入页面宽度，不包含页边距，需要手动去除
+            // 目前页边距使用 document 的 margin 设置
+            nodeObj.put("pageWidth", finalPageSize.getWidth() - document.getLeftMargin() - document.getRightMargin());
+
             if ("Image".equalsIgnoreCase(nodeObj.getString("type"))) {
                 // 文档插入图片
                 logger.info("处理图片节点");
@@ -244,8 +250,12 @@ public class NodeCreator {
         }
 
         Table table = new Table(columnSize);
-        table.setWidth(UnitValue.createPercentValue(width));
-        cellList.forEach(obj -> table.addCell(NodeCreator.cell(obj)));
+        // table.setWidth(UnitValue.createPercentValue(width)); 百分比宽度会受单元格元素影响样式
+        table.setWidth((float) (jsonObject.getFloatValue("pageWidth") * (width / 100.0)));
+        cellList.forEach(obj -> {
+            obj.put("pageWidth", jsonObject.getFloatValue("pageWidth"));
+            table.addCell(NodeCreator.cell(obj));
+        });
         logger.info("table节点处理结束");
         return table;
     }
@@ -265,7 +275,11 @@ public class NodeCreator {
         } else {
             cell = new Cell();
         }
-        cell.setWidth(UnitValue.createPercentValue(jsonObject.getInteger("width")));
+        // 百分比宽度，如果单元格内元素宽度超限，将会自动拉长单元格，影响样式。使用绝对宽度可以避免。
+        // cell.setWidth(UnitValue.createPercentValue(jsonObject.getInteger("width")));
+        float width = (float) (jsonObject.getFloatValue("pageWidth") * (jsonObject.getInteger("width") / 100.0));
+        cell.setWidth(width);
+        cell.setMaxWidth(width);
 
         if (jsonObject.containsKey("textAlignment")) {
             cell.setTextAlignment(TextAlignment.valueOf(jsonObject.getString("textAlignment")));
