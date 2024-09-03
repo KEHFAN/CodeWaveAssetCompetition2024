@@ -1,5 +1,7 @@
 package com.netease.lowcode.extension.config;
 
+import com.netease.lowcode.extension.model.MethodModel;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,5 +25,6 @@ public class DevToolsConfig {
      * aop拦截 统计数据
      */
     public static final Map<String,Long> aopAnalyzeData = new ConcurrentHashMap<>();
+    public static final Map<String, MethodModel> aopAnalyzeDetailData = new ConcurrentHashMap<>();
 
 }
