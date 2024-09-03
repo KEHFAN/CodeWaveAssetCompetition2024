@@ -1,5 +1,6 @@
 package com.netease.lowcode.extension.spring.component;
 
+import com.netease.lowcode.extension.config.DevToolsConfig;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,15 +26,26 @@ public class DevToolsAspect {
     @Around("allMethods()")
     public Object aroundAllMethods(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        String declaringTypeName = joinPoint.getSignature().getDeclaringTypeName();
-        String name = joinPoint.getSignature().getName();
+        if (DevToolsConfig.aopSwitch.get()) {
+            // 设置初始时间
+            DevToolsConfig.aopAnalyzeStartTime.compareAndSet(0,System.currentTimeMillis());
+            // 判断时间位于统计区间
+            if (System.currentTimeMillis() - DevToolsConfig.aopAnalyzeStartTime.get() < DevToolsConfig.aopAnalyzeTime.get()) {
 
+                String declaringTypeName = joinPoint.getSignature().getDeclaringTypeName();
+                String name = joinPoint.getSignature().getName();
 
-        System.out.println("拦截方法："+declaringTypeName + " ### " + name);
-        try {
-            return joinPoint.proceed();
-        }catch (Throwable e){
-            throw new RuntimeException("");
+                // 此处可能存在并发统计不准确
+                String key = String.join("##", declaringTypeName, name);
+                DevToolsConfig.aopAnalyzeData.put(key, DevToolsConfig.aopAnalyzeData.getOrDefault(key, 0L) + 1);
+            } else {
+                // 超过时间关闭统计
+                DevToolsConfig.aopSwitch.set(false);
+                DevToolsConfig.aopAnalyzeStartTime.set(0);
+                DevToolsConfig.aopAnalyzeTime.set(0);
+            }
+
         }
+        return joinPoint.proceed();
     }
 }
