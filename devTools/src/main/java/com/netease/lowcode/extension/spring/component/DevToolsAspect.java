@@ -12,16 +12,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class DevToolsAspect {
 
-    @Pointcut("execution(* *(..)) && " +
-            "!execution(* io.micrometer..*(..)) && " +
+    @Pointcut("execution(* com.abc..*(..))" +
+            "&&!execution(* com.fasterxml..*(..))" +
+            "&&!execution(* com.zaxxer..*(..))" /*+
             "!execution(* org.springframework..*(..)) && " +
             "!execution(* java..*(..)) &&" +
             "!execution(* org.apache..*(..)) &&" +
-            "!execution(* com.fasterxml..*(..)) &&" +
             "!execution(* io..*(..)) &&" +
             "!execution(* javax..*(..)) &&" +
-            "!execution(* com.zaxxer..*(..)) &&" +
-            "!execution(* org.mybatis..*(..))")
+            "!execution(* org.mybatis..*(..))"*/)
     public void allMethods(){}
 
     @Around("allMethods()")
