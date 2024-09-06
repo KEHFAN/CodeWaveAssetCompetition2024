@@ -12,18 +12,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class DevToolsAspect {
 
-    @Pointcut("execution(* com.abc..*(..))" +
-            "&&!execution(* com.fasterxml..*(..))" +
-            "&&!execution(* com.zaxxer..*(..))" /*+
-            "!execution(* org.springframework..*(..)) && " +
-            "!execution(* java..*(..)) &&" +
-            "!execution(* org.apache..*(..)) &&" +
-            "!execution(* io..*(..)) &&" +
-            "!execution(* javax..*(..)) &&" +
-            "!execution(* org.mybatis..*(..))"*/)
-    public void allMethods(){}
+//    @Pointcut("execution(* com..*(..))"
+//            +"&&!execution(* com.fasterxml..*(..))"
+//            +"&&!execution(* com.zaxxer..*(..))"
+//            +"&&!execution(* io.micrometer..*(..))"
+//            +"&&!execution(* io.prometheus..*(..))"
+//            +"&&!execution(* org.apa..*(..))"
+//            /*+
+//            "!execution(* org.springframework..*(..)) && " +
+//            "!execution(* java..*(..)) &&" +
+//            "!execution(* org.apache..*(..)) &&" +
+//            "!execution(* io..*(..)) &&" +
+//            "!execution(* javax..*(..)) &&" +
+//            "!execution(* org.mybatis..*(..))"*/)
+//    public void allMethods(){}
 
-    @Around("allMethods()")
+    @Around("!within(io..*)")
     public Object aroundAllMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         long begin = System.currentTimeMillis();
         try {
