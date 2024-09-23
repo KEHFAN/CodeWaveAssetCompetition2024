@@ -3,10 +3,12 @@ package com.netease.lowcode.pdf.extension;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.core.annotation.NaslLogic;
+import com.netease.lowcode.pdf.extension.formula.Register;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
 import com.netease.lowcode.pdf.extension.structures.CreateByXlsxRequest;
 import com.netease.lowcode.pdf.extension.utils.FileUtils;
 import com.netease.lowcode.pdf.extension.utils.FontUtils;
+import com.netease.lowcode.pdf.extension.utils.ImageUtils;
 import com.netease.lowcode.pdf.extension.utils.JSONObjectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,8 @@ import java.util.*;
 public class Excel2Pdf {
 
     private static final Logger logger = LoggerFactory.getLogger(Excel2Pdf.class);
+
+    public static ThreadLocal<Map<String,byte[]>> threadLocal = new ThreadLocal<>();
 
     @NaslLogic
     public static BaseResponse xlsx2pdf(CreateByXlsxRequest request) {
@@ -65,6 +69,8 @@ public class Excel2Pdf {
                 logger.error("xlsx2pdf不支持解析 *.xls 文件,文件名：{}",fileName);
                 return BaseResponse.FAIL("仅支持 *.xlsx 文件");
             }
+            // 注册自定义函数
+            Register.registerFormulas(wb);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("fileName",request.getExportFileName());
@@ -82,6 +88,10 @@ public class Excel2Pdf {
                 logger.error("sheet为空");
                 return BaseResponse.FAIL("读取sheet0为空");
             }
+
+            // TODO: 获取sheet图片
+            Map<String, byte[]> sheetImages = ImageUtils.getSheetImages(wb);
+            threadLocal.set(sheetImages);
 
             JSONObject table = new JSONObject();
             table.put("type","Table");
@@ -177,6 +187,12 @@ public class Excel2Pdf {
                     CellType cellType = cell.getCellType();
                     if (CellType.STRING.equals(cellType)) {
                         paragraph.put("text", cell.getStringCellValue());
+                    } else if (CellType.FORMULA.equals(cellType)) {
+                        String cellFormula = cell.getCellFormula();
+                        CellValue evaluate = wb.getCreationHelper().createFormulaEvaluator().evaluate(cell);
+
+
+                        System.out.println();
                     }
 
 
@@ -369,6 +385,8 @@ public class Excel2Pdf {
         } catch (IOException e) {
             logger.error("pdf创建失败", e);
             return BaseResponse.FAIL(Arrays.toString(e.getStackTrace()), e.getMessage());
+        } finally {
+            threadLocal.remove();
         }
     }
 

@@ -74,7 +74,7 @@ public class Excel2PdfTest {
         Excel2Pdf.xlsx2pdf(request);
     }
 
-    public static void main(String[] args) {
+    public static void main4(String[] args) {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
         request.setTemplateUrl("http://dev.erp.fx.lcap.163yun.com/upload/app/fa9c98b7-cc09-42bb-ba17-f65cc8bca381/导出pdf模板_20240902145341687.xlsx");
         request.setJsonData("{\"nameB\":\"浙江来福我也不知道就乱天一通的地址我也不知道就乱天一通的地址谐波传动股份有限公司\",\"addressB\":\"我也不知道就乱天一我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址通的地址\",\"contactorB\":\"孙照浩\",\"phoneB\":\"1530651530652604015306526040153065260401530652604026040\",\"emailB\":\"wb.sunao0nao0nao0nao0nao0nao0nao0nao0nao0nao0nao0nao01@mesg.corp.netease.com\",\"orderCode\":\"XZY240902038\",\"paymentTerms\":\"没有条件\",\"orderDate\":\"2024-09-02\",\"total\":161.9,\"list\":[{\"index\":1,\"mCode\":\"TEMP000000000000000000000000000000000000000000000000000000000000000000000000027\",\"mName\":\"【临时】测试PDF02\",\"mType\":null,\"count\":15,\"unitPrice\":6.8,\"totalPrice\":102,\"expectDate\":\"2024-08-30\"},{\"index\":2,\"mCode\":\"TEMP000026\",\"mName\":\"【临时】测试PDF01\",\"mType\":null,\"count\":10,\"unitPrice\":5.99,\"totalPrice\":59.9,\"expectDate\":\"2024-08-29\"}],\"nameA\":\"孙照浩\",\"phoneA\":\"15306526040\",\"emailA\":\"wb.sun01@mesg.corp.netease.com\"}");
@@ -2216,5 +2216,14 @@ public class Excel2PdfTest {
                 "\t}]\n" +
                 "}";
         PdfGenerator.createPDFV2ByStr(jsonData,template);
+    }
+
+    public static void main(String[] args) {
+        CreateByXlsxRequest request = new CreateByXlsxRequest();
+        request.setTemplateUrl("https://dev-upload21-kehfan.app.codewave.163.com:443/upload/app/f3bd57d5-3205-4424-9ae6-f8e519318f2b/图片测试_20240923150448346.xlsx");
+        request.setLastRowNum(3);
+        request.setLastColLabel("C");
+        request.setExportFileName("测试测试.pdf");
+        Excel2Pdf.xlsx2pdf(request);
     }
 }
