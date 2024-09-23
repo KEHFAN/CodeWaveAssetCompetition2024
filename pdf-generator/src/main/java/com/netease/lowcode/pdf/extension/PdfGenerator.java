@@ -122,7 +122,7 @@ public class PdfGenerator {
             ByteArrayOutputStream byteArrayOutputStream = NodeCreator.node(jsonObject);
             ByteArrayInputStream uploadStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
-            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStream(uploadStream, jsonObject.getString("fileName"));
+            UploadResponseDTO uploadResponseDTO = FileUtils.uploadStreamV2(uploadStream, jsonObject.getString("fileName"));
 
             return BaseResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult());
         } catch (Exception e) {
