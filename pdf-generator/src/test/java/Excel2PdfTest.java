@@ -2224,6 +2224,7 @@ public class Excel2PdfTest {
         request.setLastRowNum(3);
         request.setLastColLabel("C");
         request.setExportFileName("测试测试.pdf");
-        Excel2Pdf.xlsx2pdf(request);
+        BaseResponse baseResponse = Excel2Pdf.xlsx2pdf(request);
+        System.out.println();
     }
 }

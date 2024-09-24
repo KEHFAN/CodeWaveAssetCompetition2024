@@ -190,9 +190,16 @@ public class Excel2Pdf {
                     } else if (CellType.FORMULA.equals(cellType)) {
                         String cellFormula = cell.getCellFormula();
                         CellValue evaluate = wb.getCreationHelper().createFormulaEvaluator().evaluate(cell);
+                        // 获得图片的base64编码 写入pdf
+                        if (CellType.STRING.equals(evaluate.getCellType())) {
+                            String stringValue = evaluate.getStringValue();
+                            if (StringUtils.startsWith(stringValue, "base64,img,")) {
 
+                                byte[] decode = Base64.getDecoder().decode(stringValue.substring(11));
 
-                        System.out.println();
+                                System.out.println();
+                            }
+                        }
                     }
 
 
