@@ -195,9 +195,13 @@ public class Excel2Pdf {
                             String stringValue = evaluate.getStringValue();
                             if (StringUtils.startsWith(stringValue, "base64,img,")) {
 
-                                byte[] decode = Base64.getDecoder().decode(stringValue.substring(11));
-
-                                System.out.println();
+                                // TODO: 把图片base64编码写入即可
+                                JSONArray array = new JSONArray();
+                                paragraph.put("elements", array);
+                                JSONObject image = new JSONObject();
+                                array.add(image);
+                                image.put("type", "Image");
+                                image.put("base64", stringValue.substring(11));
                             }
                         }
                     }
