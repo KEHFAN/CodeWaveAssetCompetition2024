@@ -9,4 +9,9 @@ public class JsonUtil {
     public static <T> T fromJson(String json, Class<T> valueType) throws JsonProcessingException {
         return MAPPER.readValue(json, valueType);
     }
+
+    public static String toJson(Object object) throws JsonProcessingException {
+        return MAPPER.writeValueAsString(object);
+
+    }
 }
