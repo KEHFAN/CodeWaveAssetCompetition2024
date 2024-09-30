@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.netease.lowcode.extension.filestorage.UploadPatchLocalFileStorageClient,\
+    com.netease.lowcode.extension.filestorage.UploadPatchS3FileStorageClient,\
+    com.netease.lowcode.extension.filestorage.UploadPatchFileStorageClientManager,\
+    com.netease.lowcode.extension.UploadPatch
