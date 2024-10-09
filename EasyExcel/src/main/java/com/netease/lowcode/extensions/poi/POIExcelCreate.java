@@ -1,6 +1,9 @@
 package com.netease.lowcode.extensions.poi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.netease.lowcode.core.annotation.NaslLogic;
+import com.netease.lowcode.extensions.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -13,7 +16,11 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class POIExcelCreate {
 
@@ -24,6 +31,12 @@ public class POIExcelCreate {
 
         request.validate();
 
+        ExcelData excelData = new ExcelData();
+        // 设置属性与表头的映射
+        excelData.setName(request.getExportFileName());
+        // 一个逻辑目前仅支持一个sheet
+        SheetData sheetData = new SheetData();
+
         // 1. 当列很多时，需要手动繁琐的add，最好通过 解析 T 泛型
         // 2. 解析Structure属性的@Label注解参数，获取表头，列的属性：列宽、列的order、列值的条件
         // 4. 合并单元格的情况（暂不支持，涉及到计算）
@@ -33,46 +46,14 @@ public class POIExcelCreate {
         // 8. 列值条件，引入groovy语法
         // 9. 导出多个sheet?（暂不支持）
 
-        // 解析表头数据：复杂表头：在label中 使用 主表头1-子表头2 会自动合并相同且相邻的主表头
-        Field[] declaredFields = clazz.getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            Annotation[] annotations = declaredField.getAnnotations();
-            if(Objects.nonNull(annotations)){
-                for (Annotation annotation : annotations) {
-                    String simpleName = annotation.annotationType().getSimpleName();
-                    if(StringUtils.equals("Label",simpleName)){
-                        try {
-                            Object value = annotation.annotationType().getMethod("value").invoke(annotation);
-                            System.out.println();
-                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            }
-        }
+        CommonHandler.parseTitle(clazz, sheetData);
+        // 添加表头
+        CommonHandler.addTitle(sheetData);
+        CommonHandler.addData(request, sheetData);
 
-        HSSFWorkbook wb = new HSSFWorkbook();
-        HSSFSheet sheet = wb.createSheet();
-        // 创建一行数据
-        HSSFRow row = sheet.createRow(0);
-        //     * NASL类型和Java类型匹配关系：
-        //    * NASL：Boolean， Java：java.lang.Boolean
-        //    * NASL：Integer， Java：java.lang.Long
-        //    * NASL：String，      Java：java.lang.String
-        //    * NASL：Time，        Java：java.time.LocalTime
-        //    * NASL：Date，        Java：java.time.LocalDate
-        //    * NASL：DateTime，    Java：java.time.ZonedDateTime
-        //    * NASL：Decimal， Java：java.math.BigDecimal
-        //    * NASL：List，        Java：java.util.List
-        //    * NASL：Map，     Java：java.util.Map
-        HSSFCell cell = row.createCell(0);
-        cell.setCellValue("ff");
-        try {
-            wb.write(new FileOutputStream("test.xls"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        excelData.setSheetList(Collections.singletonList(sheetData));
+        CommonHandler.createXls(excelData);
+
         return null;
     }
 

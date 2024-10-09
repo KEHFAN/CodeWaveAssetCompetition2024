@@ -3,19 +3,36 @@ import com.netease.lowcode.extensions.JsonUtil;
 import com.netease.lowcode.extensions.poi.POIExcelCreate;
 import com.netease.lowcode.extensions.poi.POIExcelCreateDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class POIExcelCreateTest {
 
     public static void main(String[] args) throws JsonProcessingException {
         POIExcelCreateDTO request = new POIExcelCreateDTO();
-        request.setExportFileName("tttttttt.xls");
+        request.setExportFileName("tttttttt1.xls");
 
         List<DataStructure> data = new ArrayList<>();
         DataStructure e = new DataStructure();
-        e.property1 = "hh";
-        e.property2 = "ff";
+        e.aBoolean = true;
+        e.aLong = 1234545L;
+        e.string = "fdfsdf";
+        e.localTime = LocalTime.now();
+        e.localDate = LocalDate.now();
+        e.zonedDateTime = ZonedDateTime.now();
+        e.bigDecimal = new BigDecimal("3.35");
+        e.list = Arrays.asList("3","4");
+        e.map = new HashMap<String, String>() {
+            {
+                put("a", "b");
+                put("b", "b");
+                put("c", "b");
+            }
+        };
+        e.num = 22L;
         data.add(e);
 
         request.setJsonData(JsonUtil.toJson(data));
@@ -25,14 +42,25 @@ public class POIExcelCreateTest {
 
 class DataStructure {
 
-    @Label("标题1")
-    public String property1;
-    @Label("标题2")
-    public String property2;
-    @Label
-    public String property3;
+    @Label("boolean测试表头")
+    public Boolean aBoolean;
+    @Label("long测试表头")
+    public Long aLong;
+    @Label("string")
+    public String string;
+    @Label("localtime")
+    public LocalTime localTime;
+    @Label("localDate")
+    public LocalDate localDate;
+    @Label("zonedDateTime")
+    public ZonedDateTime zonedDateTime;
+    @Label("bigDecimal")
+    public BigDecimal bigDecimal;
+    @Label("list")
+    public List<String> list;
+    @Label("map")
+    public Map<String,String> map;
 
-    public String property4;
-
-
+    @Label("@Style={\"background\":\"RED\",\"title\":\"测试标题\",\"index\":9}")
+    public Long num;
 }
