@@ -32,7 +32,7 @@ public class POIExcelCreateTest {
                 put("c", "b");
             }
         };
-        e.num = 22L;
+        e.num = 10L;
         data.add(e);
 
         request.setJsonData(JsonUtil.toJson(data));
@@ -61,6 +61,6 @@ class DataStructure {
     @Label("map")
     public Map<String,String> map;
 
-    @Label("@Style={\"background\":\"RED\",\"title\":\"测试标题\",\"index\":9}")
+    @Label("@Style={\"backgroundCondition\":\"GREEN<20:RED<BLACK\",\"title\":\"测试标题\",\"index\":9}")
     public Long num;
 }

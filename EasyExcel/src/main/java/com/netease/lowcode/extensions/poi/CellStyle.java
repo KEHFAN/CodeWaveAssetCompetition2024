@@ -6,6 +6,9 @@ public class CellStyle {
 
     // 单元格背景填充颜色
     private String background;
+    // 根据条件设置背景填充颜色
+    // eg. GREEN<20:RED<BLACK，等于20为红色，小于为绿色、大于为黑色
+    private String backgroundCondition;
     // 列表头
     private String title;
     // 指定列的顺序
@@ -33,5 +36,13 @@ public class CellStyle {
 
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public String getBackgroundCondition() {
+        return backgroundCondition;
+    }
+
+    public void setBackgroundCondition(String backgroundCondition) {
+        this.backgroundCondition = backgroundCondition;
     }
 }

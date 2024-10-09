@@ -271,7 +271,24 @@ public class CommonHandler {
 
         HSSFCellStyle hssfCellStyle = wb.createCellStyle();
 
-        if (cellStyle.getBackground() > 0) {
+
+        if(StringUtils.isNotBlank(cellStyle.getBackgroundCondition())){
+            // 需要符合规范 GREEN<20:RED<BLACK 且必须是long
+            if(cellData.getData() instanceof Double){
+                String[] split = cellStyle.getBackgroundCondition().split("<");
+
+                if ((Double) cellData.getData() < Double.valueOf(split[1].split(":")[0])) {
+                    cellStyle.setBackground(split[0]);
+                } else if ((Double) cellData.getData() > Double.valueOf(split[1].split(":")[0])) {
+                    cellStyle.setBackground(split[2]);
+                } else {
+                    cellStyle.setBackground(split[1].split(":")[1]);
+                }
+                hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
+                hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            }
+        }
+        else if (cellStyle.getBackground() > 0) {
             hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
             hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
