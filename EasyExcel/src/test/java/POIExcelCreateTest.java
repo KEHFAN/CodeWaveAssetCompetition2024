@@ -42,7 +42,7 @@ public class POIExcelCreateTest {
 
 class DataStructure {
 
-    @Label("boolean测试表头")
+    @Label("@Style={\"colWidth\":20,\"title\":\"boolean测试表头\"}")
     public Boolean aBoolean;
     @Label("long测试表头")
     public Long aLong;

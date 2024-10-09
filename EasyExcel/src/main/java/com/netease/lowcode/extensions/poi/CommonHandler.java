@@ -60,7 +60,9 @@ public class CommonHandler {
 
                                 CellStyle style = JsonUtil.fromJson(substring, CellStyle.class);
                                 sheetData.putColStyleEntry(name, style);
-                                sheetData.putColHeadIndexEntry(name, style.getIndex());
+                                if(Objects.nonNull(style.getIndex())){
+                                    sheetData.putColHeadIndexEntry(name, style.getIndex());
+                                }
                                 title = style.getTitle();
                             } else {
                                 title = value;
@@ -288,9 +290,14 @@ public class CommonHandler {
                 hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             }
         }
-        else if (cellStyle.getBackground() > 0) {
-            hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
-            hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        else if (cellStyle.getBackground() > 0) {
+//            hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
+//            hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//        }
+
+        // 设置列宽
+        if (Objects.nonNull(cellStyle.getColWidth())) {
+            wb.getSheetAt(0).setColumnWidth(cellData.getIndex(), cellStyle.getColWidth() * 256);
         }
 
         cell.setCellStyle(hssfCellStyle);

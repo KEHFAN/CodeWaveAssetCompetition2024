@@ -14,6 +14,9 @@ public class CellStyle {
     // 指定列的顺序
     private Integer index;
 
+    // 列宽，单位为一个字符的宽度
+    private Integer colWidth;
+
     public short getBackground() {
         return IndexedColors.valueOf(this.background).getIndex();
     }
@@ -44,5 +47,13 @@ public class CellStyle {
 
     public void setBackgroundCondition(String backgroundCondition) {
         this.backgroundCondition = backgroundCondition;
+    }
+
+    public Integer getColWidth() {
+        return colWidth;
+    }
+
+    public void setColWidth(Integer colWidth) {
+        this.colWidth = colWidth;
     }
 }
