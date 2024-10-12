@@ -1,34 +1,40 @@
-package com.netease.lowcode.extensions.poi;
+package com.netease.lowcode.extensions.easyexcel.poi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.netease.lowcode.extensions.FileUtils;
 import com.netease.lowcode.extensions.JsonUtil;
+import com.netease.lowcode.extensions.UploadResponseDTO;
+import com.netease.lowcode.extensions.response.ExportBigDataResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+@Component("libraryEasyExcelCommonHandler")
 public class CommonHandler {
+    private static FileUtils fileUtils;
 
     public static void parseTitle(Class<?> clazz,SheetData sheetData) {
         // 解析表头数据：复杂表头：在label中 使用 主表头1-子表头2 会自动合并相同且相邻的主表头
@@ -208,8 +214,8 @@ public class CommonHandler {
         XSSFCell cell = row.createCell(0);
     }
 
-    public static void createXls(ExcelData excelData) {
-
+    public static ExportBigDataResponse createXls(ExcelData excelData) {
+        long start = System.currentTimeMillis();
         HSSFWorkbook wb = new HSSFWorkbook();
         for (SheetData sheetData : excelData.getSheetList()) {
             HSSFSheet sheet = wb.createSheet();
@@ -262,10 +268,31 @@ public class CommonHandler {
             }
         }
 
+        File exportFile = null;
         try {
-            wb.write(Files.newOutputStream(Paths.get(excelData.getName())));
-        } catch (IOException e) {
+            // 创建目录
+            String path = String.join("/", "data", String.valueOf(System.currentTimeMillis()));
+            File dir = new File(path);
+            if (!dir.mkdirs()) {
+                throw new RuntimeException("创建目录失败");
+            }
+            exportFile = new File(path,excelData.getName());
+            FileOutputStream fos = new FileOutputStream(exportFile);
+
+            //wb.write(Files.newOutputStream(Paths.get(excelData.getName())));
+            wb.write(fos);
+            fos.flush();
+            fos.close();
+
+            UploadResponseDTO uploadResponseDTO = fileUtils.uploadFileV2(exportFile);
+            return ExportBigDataResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult(), (double) (System.currentTimeMillis() - start) / 1000, (double) exportFile.length());
+        } catch (IOException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        } finally {
+            // 删除文件
+            if (Objects.nonNull(exportFile)) {
+                FileUtils.delete(exportFile.getParentFile());
+            }
         }
     }
 
@@ -358,5 +385,11 @@ public class CommonHandler {
 
     private static void setCellValue() {
 
+    }
+
+    @Autowired
+    @Qualifier("easyExcelFileUtils")
+    public void setFileUtils(FileUtils fileUtils) {
+        CommonHandler.fileUtils = fileUtils;
     }
 }

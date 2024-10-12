@@ -1,4 +1,4 @@
-package com.netease.lowcode.extensions.poi;
+package com.netease.lowcode.extensions.easyexcel.poi;
 
 import com.netease.lowcode.core.annotation.NaslStructure;
 import org.apache.commons.lang3.StringUtils;
@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 @NaslStructure
 public class POIExcelCreateDTO {
 
-    private String exportFileName;
-    private String jsonData;
+    public String exportFileName;
+    public String jsonData;
 
     public void validate() {
         if (StringUtils.isBlank(exportFileName)) {

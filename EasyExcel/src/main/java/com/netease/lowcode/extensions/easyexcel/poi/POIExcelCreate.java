@@ -1,33 +1,31 @@
-package com.netease.lowcode.extensions.poi;
+package com.netease.lowcode.extensions.easyexcel.poi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.netease.lowcode.core.annotation.NaslLogic;
-import com.netease.lowcode.extensions.JsonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellType;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import com.netease.lowcode.extensions.response.ExportBigDataResponse;
 import java.util.*;
 
 public class POIExcelCreate {
 
 
 
-    //@NaslLogic
-    public static <T> String poiCreateXls(POIExcelCreateDTO request, Class<T> clazz) {
+//    @NaslLogic
+//    public static ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request) {
+//        // 脚手架打包后，修改 nasl-metadata 文件，增加泛型参数
+//        /**
+//         *       "typeParams":[
+//         *         {
+//         *             "concept":"TypeParam",
+//         *             "name":"T"
+//         *         }
+//         *       ],
+//         *       "params": [{
+//         *       ...
+//         *       }]
+//         */
+//        // 第二部注释 打包插件，注释该方法，重新打jar包替换
+//        return null;
+//    }
+    public static <T> ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request, Class<T> clazz) {
 
         request.validate();
 
@@ -52,9 +50,8 @@ public class POIExcelCreate {
         CommonHandler.addData(request, sheetData);
 
         excelData.setSheetList(Collections.singletonList(sheetData));
-        CommonHandler.createXls(excelData);
 
-        return null;
+        return CommonHandler.createXls(excelData);
     }
 
     @NaslLogic

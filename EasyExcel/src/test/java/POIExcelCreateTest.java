@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netease.lowcode.extensions.JsonUtil;
-import com.netease.lowcode.extensions.poi.POIExcelCreate;
-import com.netease.lowcode.extensions.poi.POIExcelCreateDTO;
+import com.netease.lowcode.extensions.easyexcel.poi.POIExcelCreate;
+import com.netease.lowcode.extensions.easyexcel.poi.POIExcelCreateDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
