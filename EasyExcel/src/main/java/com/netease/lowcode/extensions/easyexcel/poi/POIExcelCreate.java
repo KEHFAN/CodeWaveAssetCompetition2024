@@ -7,24 +7,30 @@ import java.util.*;
 public class POIExcelCreate {
 
 
+    /**
+     * 只能后端调用，不支持前端直接调用
+     *
+     * @param request
+     * @return
+     */
+    @NaslLogic
+    public static ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request) {
+        // 脚手架打包后，修改 nasl-metadata 文件，增加泛型参数
+        /**
+         *       "typeParams":[
+         *         {
+         *             "concept":"TypeParam",
+         *             "name":"T"
+         *         }
+         *       ],
+         *       "params": [{
+         *       ...
+         *       }]
+         */
+        // 第二部注释 打包插件，注释该方法，重新打jar包替换
+        return null;
+    }
 
-//    @NaslLogic
-//    public static ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request) {
-//        // 脚手架打包后，修改 nasl-metadata 文件，增加泛型参数
-//        /**
-//         *       "typeParams":[
-//         *         {
-//         *             "concept":"TypeParam",
-//         *             "name":"T"
-//         *         }
-//         *       ],
-//         *       "params": [{
-//         *       ...
-//         *       }]
-//         */
-//        // 第二部注释 打包插件，注释该方法，重新打jar包替换
-//        return null;
-//    }
     public static <T> ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request, Class<T> clazz) {
 
         request.validate();
