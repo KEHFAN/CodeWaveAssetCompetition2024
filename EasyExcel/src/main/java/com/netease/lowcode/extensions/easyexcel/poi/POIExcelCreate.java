@@ -32,7 +32,7 @@ public class POIExcelCreate {
     }
 
     public static <T> ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request, Class<T> clazz) {
-
+        // 由于结构的Label标签IDE中输入字符不能超过63 因此提供覆写的地方，传入。
         request.validate();
 
         ExcelData excelData = new ExcelData();
@@ -50,7 +50,7 @@ public class POIExcelCreate {
         // 8. 列值条件，引入groovy语法
         // 9. 导出多个sheet?（暂不支持）
 
-        CommonHandler.parseTitle(clazz, sheetData);
+        CommonHandler.parseTitle(clazz, sheetData, request.getLabels());
         // 添加表头
         CommonHandler.addTitle(sheetData);
         CommonHandler.addData(request, sheetData);

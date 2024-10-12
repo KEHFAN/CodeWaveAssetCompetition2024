@@ -6,6 +6,7 @@ import com.netease.lowcode.extensions.FileUtils;
 import com.netease.lowcode.extensions.JsonUtil;
 import com.netease.lowcode.extensions.UploadResponseDTO;
 import com.netease.lowcode.extensions.response.ExportBigDataResponse;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -36,7 +37,7 @@ import java.util.*;
 public class CommonHandler {
     private static FileUtils fileUtils;
 
-    public static void parseTitle(Class<?> clazz,SheetData sheetData) {
+    public static void parseTitle(Class<?> clazz,SheetData sheetData,Map<String,String> labels) {
         // 解析表头数据：复杂表头：在label中 使用 主表头1-子表头2 会自动合并相同且相邻的主表头
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field declaredField : declaredFields) {
@@ -46,10 +47,20 @@ public class CommonHandler {
             Class<?> type = declaredField.getType();
             String title = "";
 
+            // 判断是否覆写label
+            String overrideLabel = "";
+            if (MapUtils.isNotEmpty(labels) && labels.containsKey(name)) {
+                overrideLabel = labels.get(name);
+                try {
+                    title = parseLabel(sheetData, name, overrideLabel);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             // 获取注解表头
             Annotation[] annotations = declaredField.getAnnotations();
-            if(Objects.nonNull(annotations)){
+            if (Objects.nonNull(annotations) && StringUtils.isBlank(overrideLabel)) {
                 for (Annotation annotation : annotations) {
                     String simpleName = annotation.annotationType().getSimpleName();
                     // 如果没有Label注解就不解析 表头样式，该列不导出到excel
@@ -60,19 +71,7 @@ public class CommonHandler {
                             // 如果是以 @Style=json 开头就解析json内容作为样式
                             // 否则直接获取value作为表头
 
-                            if(StringUtils.startsWith(value,"@Style=")) {
-                                // 解析样式
-                                String substring = value.substring(7);
-
-                                CellStyle style = JsonUtil.fromJson(substring, CellStyle.class);
-                                sheetData.putColStyleEntry(name, style);
-                                if(Objects.nonNull(style.getIndex())){
-                                    sheetData.putColHeadIndexEntry(name, style.getIndex());
-                                }
-                                title = style.getTitle();
-                            } else {
-                                title = value;
-                            }
+                            title = parseLabel(sheetData, name, value);
 
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException |
                                  JsonProcessingException e) {
@@ -85,6 +84,24 @@ public class CommonHandler {
             sheetData.putColHeadEntry(name, title);
             sheetData.putColJavaTypeEntry(name, type);
         }
+    }
+
+    private static String parseLabel(SheetData sheetData, String name, String value) throws JsonProcessingException {
+        String title;
+        if(StringUtils.startsWith(value,"@Style=")) {
+            // 解析样式
+            String substring = value.substring(7);
+
+            CellStyle style = JsonUtil.fromJson(substring, CellStyle.class);
+            sheetData.putColStyleEntry(name, style);
+            if(Objects.nonNull(style.getIndex())){
+                sheetData.putColHeadIndexEntry(name, style.getIndex());
+            }
+            title = style.getTitle();
+        } else {
+            title = value;
+        }
+        return title;
     }
 
     public static void addTitle(SheetData sheetData) {
