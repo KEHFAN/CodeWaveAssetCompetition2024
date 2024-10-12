@@ -214,7 +214,8 @@ public class CommonHandler {
                     // 设置列索引，与表头一致
                     cellData.setIndex(sheetData.getColHeadIndex(colName));
                     // 读取样式
-                    cellData.setCellStyle(sheetData.getColStyle(colName));
+                    CellStyle colStyle = sheetData.getColStyle(colName);
+                    cellData.setCellStyle(Objects.isNull(colStyle) ? null : colStyle.clone());
                     rowData.addCell(cellData);
                 }
 

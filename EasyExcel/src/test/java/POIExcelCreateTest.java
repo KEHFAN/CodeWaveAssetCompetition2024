@@ -1,3 +1,4 @@
+import cn.hutool.core.util.RandomUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netease.lowcode.extensions.JsonUtil;
 import com.netease.lowcode.extensions.easyexcel.poi.POIExcelCreate;
@@ -34,6 +35,27 @@ public class POIExcelCreateTest {
         };
         e.num = 10L;
         data.add(e);
+
+        for (int i = 0; i < 10; i++) {
+            DataStructure e1 = new DataStructure();
+            e1.num  = RandomUtil.randomLong(1,100);
+            e1.aBoolean = true;
+            e1.aLong = 1234545L;
+            e1.string = "fdfsdf";
+            e1.localTime = LocalTime.now();
+            e1.localDate = LocalDate.now();
+            e1.zonedDateTime = ZonedDateTime.now();
+            e1.bigDecimal = new BigDecimal("3.35");
+            e1.list = Arrays.asList("3","4");
+            e1.map = new HashMap<String, String>() {
+                {
+                    put("a", "b");
+                    put("b", "b");
+                    put("c", "b");
+                }
+            };
+            data.add(e1);
+        }
 
         request.setJsonData(JsonUtil.toJson(data));
         POIExcelCreate.poiCreateXls(request,DataStructure.class);

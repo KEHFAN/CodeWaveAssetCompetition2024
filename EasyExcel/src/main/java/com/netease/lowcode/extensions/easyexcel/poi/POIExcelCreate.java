@@ -28,7 +28,7 @@ public class POIExcelCreate {
          *       }]
          */
         // 第二部注释 打包插件，注释该方法，重新打jar包替换
-        return null;
+        throw new RuntimeException("打包方式不对，请重新打包");
     }
 
     public static <T> ExportBigDataResponse poiCreateXls(POIExcelCreateDTO request, Class<T> clazz) {

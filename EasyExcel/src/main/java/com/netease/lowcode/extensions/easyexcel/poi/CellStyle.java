@@ -71,4 +71,15 @@ public class CellStyle {
     public void setRowBackgroundCondition(String rowBackgroundCondition) {
         this.rowBackgroundCondition = rowBackgroundCondition;
     }
+
+    public CellStyle clone() {
+        CellStyle cellStyle = new CellStyle();
+        cellStyle.setBackground(this.background);
+        cellStyle.setTitle(this.title);
+        cellStyle.setIndex(this.index);
+        cellStyle.setBackgroundCondition(this.backgroundCondition);
+        cellStyle.setColWidth(this.colWidth);
+        cellStyle.setRowBackgroundCondition(this.rowBackgroundCondition);
+        return cellStyle;
+    }
 }
