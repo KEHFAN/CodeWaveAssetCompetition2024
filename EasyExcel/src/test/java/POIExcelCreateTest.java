@@ -61,6 +61,6 @@ class DataStructure {
     @Label("map")
     public Map<String,String> map;
 
-    @Label("@Style={\"backgroundCondition\":\"GREEN<20:RED<BLACK\",\"title\":\"测试标题\",\"index\":9}")
+    @Label("@Style={\"rowBackgroundCondition\":\"GREEN<20:RED<BLACK\",\"title\":\"测试标题\",\"index\":9}")
     public Long num;
 }

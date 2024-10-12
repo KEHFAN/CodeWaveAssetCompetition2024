@@ -220,6 +220,10 @@ public class CommonHandler {
                         mergedRegion.getLastRow(), mergedRegion.getFirstCol(), mergedRegion.getLastCol()));
             }
 
+            // 设置样式前预处理
+            preSetCellStyle(sheetData);
+
+
             for (int i = 0; i < sheetData.getRowDataList().size(); i++) {
 
                 // 创建一行数据
@@ -265,6 +269,53 @@ public class CommonHandler {
         }
     }
 
+    private static void preSetCellStyle(SheetData sheetData) {
+        // 对于整行样式，单独做预处理
+        for (RowData rowData : sheetData.getRowDataList()) {
+
+            // 这一行最终的背景色
+            String background = null;
+
+            // 遍历行，是否有整行样式
+            for (CellData cellData : rowData.getCellDataList()) {
+                // 检查样式
+                CellStyle cellStyle = cellData.getCellStyle();
+                if(Objects.isNull(cellStyle)){
+                    continue;
+                }
+                // 仅生效匹配到的第一个整行样式
+                if(StringUtils.isNotBlank(cellStyle.getRowBackgroundCondition())){
+                    // 需要符合规范 GREEN<20:RED<BLACK 且必须是long
+                    if(cellData.getData() instanceof Double){
+                        String[] split = cellStyle.getRowBackgroundCondition().split("<");
+
+                        if ((Double) cellData.getData() < Double.valueOf(split[1].split(":")[0])) {
+                            background = split[0];
+                        } else if ((Double) cellData.getData() > Double.valueOf(split[1].split(":")[0])) {
+                            background = split[2];
+                        } else {
+                            background = split[1].split(":")[1];
+                        }
+                    }
+                    break;
+                }
+            }
+
+            // 对整行进行样式填充
+            if(StringUtils.isNotBlank(background)){
+                for (CellData cellData : rowData.getCellDataList()) {
+                    CellStyle cellStyle = cellData.getCellStyle();
+                    if (Objects.isNull(cellStyle)) {
+                        cellData.setCellStyle(new CellStyle());
+                        cellStyle = cellData.getCellStyle();
+                    }
+                    // 行样式优先级高于单元格，会覆盖单元格样式
+                    cellStyle.setBackground(background);
+                }
+            }
+        }
+    }
+
     private static void setCellStyle(CellData cellData, HSSFCell cell, HSSFWorkbook wb) {
         CellStyle cellStyle = cellData.getCellStyle();
         if (Objects.isNull(cellStyle)) {
@@ -290,10 +341,12 @@ public class CommonHandler {
                 hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             }
         }
-//        else if (cellStyle.getBackground() > 0) {
-//            hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
-//            hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//        }
+
+        // 直接指定单元格背景色
+        if(StringUtils.isNotBlank(cellStyle.getBackgroundStr())){
+            hssfCellStyle.setFillForegroundColor(cellStyle.getBackground());
+            hssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        }
 
         // 设置列宽
         if (Objects.nonNull(cellStyle.getColWidth())) {

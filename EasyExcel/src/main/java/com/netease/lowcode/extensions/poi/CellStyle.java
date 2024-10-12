@@ -9,6 +9,9 @@ public class CellStyle {
     // 根据条件设置背景填充颜色
     // eg. GREEN<20:RED<BLACK，等于20为红色，小于为绿色、大于为黑色
     private String backgroundCondition;
+    // 根据单元格条件设置整行背景颜色
+    // eg. 同 @backgroundCondition
+    private String rowBackgroundCondition;
     // 列表头
     private String title;
     // 指定列的顺序
@@ -16,6 +19,10 @@ public class CellStyle {
 
     // 列宽，单位为一个字符的宽度
     private Integer colWidth;
+
+    public String getBackgroundStr(){
+        return this.background;
+    }
 
     public short getBackground() {
         return IndexedColors.valueOf(this.background).getIndex();
@@ -55,5 +62,13 @@ public class CellStyle {
 
     public void setColWidth(Integer colWidth) {
         this.colWidth = colWidth;
+    }
+
+    public String getRowBackgroundCondition() {
+        return rowBackgroundCondition;
+    }
+
+    public void setRowBackgroundCondition(String rowBackgroundCondition) {
+        this.rowBackgroundCondition = rowBackgroundCondition;
     }
 }
