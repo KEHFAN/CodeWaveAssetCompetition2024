@@ -1,12 +1,15 @@
 package com.netease.lowcode.extension.uncompress;
 
+import com.netease.lowcode.core.annotation.NaslStructure;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@NaslStructure
 public class Result {
 
-    public boolean success;
-    public String message;
+    public Boolean success;
+    public String msg;
     public String trace;
     public Map<String, String> data = new HashMap<>();
 
@@ -18,7 +21,7 @@ public class Result {
     public static Result OK() {
         Result result = new Result();
         result.setSuccess(true);
-        result.setMessage("OK");
+        result.setMsg("OK");
         return result;
     }
 
@@ -29,7 +32,7 @@ public class Result {
     public static Result FAIL(String msg, String trace) {
         Result result = new Result();
         result.setSuccess(false);
-        result.setMessage(msg);
+        result.setMsg(msg);
         result.setTrace(trace);
         return result;
     }
@@ -42,12 +45,12 @@ public class Result {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public String getTrace() {

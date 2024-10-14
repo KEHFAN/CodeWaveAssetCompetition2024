@@ -1,5 +1,6 @@
 package com.netease.lowcode.extension.uncompress;
 
+import com.netease.lowcode.core.annotation.NaslLogic;
 import com.netease.lowcode.extension.compress.FileUtil;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.LocalFileHeader;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 
 public class UnZip {
 
+    @NaslLogic
     public static Result unzipWithPassword(String zipUrl, String extractFile, String password) {
 
         if (StringUtils.isBlank(password)) {
@@ -32,7 +34,7 @@ public class UnZip {
                 String fileName = entry.getFileName();
 
                 if (StringUtils.isBlank(extractFile)) {
-                    ok.setMessage("未指定提取文件，仅返回文件列表");
+                    ok.setMsg("未指定提取文件，仅返回文件列表");
                     ok.add(fileName, null);
                 }
 
@@ -79,7 +81,7 @@ public class UnZip {
                 String fileName = zipEntry.getName();
 
                 if (StringUtils.isBlank(extractFile)) {
-                    ok.setMessage("未指定提取文件，仅返回文件列表");
+                    ok.setMsg("未指定提取文件，仅返回文件列表");
                     ok.add(fileName, null);
                 }
 
