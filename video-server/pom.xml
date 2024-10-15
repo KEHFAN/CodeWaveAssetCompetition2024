@@ -3,46 +3,55 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.9.RELEASE</version><!--与当前制品应用默认版本统一-->
-    </parent>
 
-    <name>IDUtil</name>
-    <description>ID生成工具包</description>
-    <groupId>com.fdddf</groupId>
-    <artifactId>IDUtil</artifactId>
-    <version>1.0.4</version>
+    <groupId>com.netease.lowcode.extension</groupId>
+    <artifactId>video-server</artifactId>
+    <version>1.0.0</version>
+    <description>
+        提供视频加速服务
+    </description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nasl.ide.version>3.3</nasl.ide.version>
     </properties>
+
     <dependencies>
-        <!--本案例是本地系统引入nasl-metadata-collector-0.7.0.jar的方式。
-        若把nasl-metadata-collector-0.7.0.jar安装到自己的maven仓库，
-        注意修改artifactId和groupId的情况下，不要使用<scope>system</scope>，会在发布时造成依赖中断。
-        不修改artifactId和groupId的情况下，nasl-metadata-maven-plugin会做特殊处理-->
         <dependency>
             <artifactId>nasl-metadata-collector</artifactId>
             <groupId>com.netease.lowcode</groupId>
-            <version>0.7.0</version>
+            <version>0.8.0</version>
             <optional>true</optional>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/jar/nasl-metadata-collector-0.7.0.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.2.8.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.yitter</groupId>
-            <artifactId>yitter-idgenerator</artifactId>
-            <version>1.0.6</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.2.8.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.8.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>9.0.37</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -53,7 +62,6 @@
                 <version>1.4.2</version>
                 <configuration>
                     <jarWithDependencies>false</jarWithDependencies>
-                    <rewrittenGroupId>com.netease.lib</rewrittenGroupId>
                     <rewriteVersion>false</rewriteVersion>
                 </configuration>
                 <executions>
