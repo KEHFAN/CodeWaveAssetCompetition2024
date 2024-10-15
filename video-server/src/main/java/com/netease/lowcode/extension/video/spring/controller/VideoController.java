@@ -2,8 +2,10 @@ package com.netease.lowcode.extension.video.spring.controller;
 
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
 import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
+import com.netease.lowcode.extension.video.spring.service.ChunkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +28,8 @@ public class VideoController {
 
     @Autowired
     private VideoConfig videoConfig;
+    @Autowired
+    private ChunkService chunkService;
 
     @GetMapping("/rest/chunk")
     public ResponseEntity<String> chunk() throws IOException {
@@ -92,17 +97,18 @@ public class VideoController {
 
 
         // 得提前对视频切片，这种方式 越往后由于skip，chunk返回的越慢
-        PartialFileResource partialFileResource = new PartialFileResource(file, start, end);
+        //PartialFileResource partialFileResource = new PartialFileResource(file, start, end);
         //FileSystemResource fileSystemResource = new FileSystemResource(file + chunkNum);
+        InputStreamResource inputStreamResource = chunkService.getChunkResource();
 
         // 返回部分资源
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
                 // 切片大小
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(partialFileResource.contentLength()))
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(inputStreamResource.contentLength()))
                 // bytes 切片起始偏移-切片结束偏移/资源总大小
                 .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, end, size))
-                .body(partialFileResource);
+                .body(inputStreamResource);
 
     }
 

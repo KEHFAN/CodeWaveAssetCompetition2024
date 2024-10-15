@@ -3,6 +3,7 @@ package com.netease.lowcode.extension.video.spring.config;
 import com.netease.lowcode.core.EnvironmentType;
 import com.netease.lowcode.core.annotation.Environment;
 import com.netease.lowcode.core.annotation.NaslConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,18 @@ public class VideoConfig {
     })
     public Long chunkSize;
 
+    /**
+     * chunk文件存储根目录
+     */
+    @Value("${baseDir}")
+    @NaslConfiguration(defaultValue = {
+            @Environment(type = EnvironmentType.DEV, value = ""),
+            @Environment(type = EnvironmentType.ONLINE, value = "")
+    })
+    public String baseDir;
+
+
+
     public Long getChunkSize() {
         if (Objects.isNull(chunkSize) || chunkSize < 100L) {
             return 100L;
@@ -30,5 +43,16 @@ public class VideoConfig {
 
     public void setChunkSize(Long chunkSize) {
         this.chunkSize = chunkSize;
+    }
+
+    public String getBaseDir() {
+        if (StringUtils.isBlank(baseDir)) {
+            return "/data";
+        }
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
     }
 }
