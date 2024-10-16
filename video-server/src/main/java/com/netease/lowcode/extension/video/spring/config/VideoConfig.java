@@ -21,6 +21,7 @@ public class VideoConfig {
             @Environment(type = EnvironmentType.ONLINE, value = "")
     })
     public Long chunkSize;
+    public Long chunkUnit = 2048L;
 
     /**
      * chunk文件存储根目录
@@ -54,5 +55,13 @@ public class VideoConfig {
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
+    }
+
+    public Long getChunkUnit() {
+        return chunkUnit;
+    }
+
+    public void setChunkUnit(Long chunkUnit) {
+        this.chunkUnit = chunkUnit;
     }
 }

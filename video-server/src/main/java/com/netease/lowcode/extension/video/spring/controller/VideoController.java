@@ -11,9 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -65,20 +63,23 @@ public class VideoController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/rest/xx")
-    public ResponseEntity<Resource> test(@RequestHeader(value = "Range", required = false) String range) throws IOException {
+    @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
+    @GetMapping("/rest/video/get/4jPEHXdG_9209150941_uhd.mp4")
+    public ResponseEntity<Resource> getVideo(@RequestHeader(value = "Range", required = false) String range) throws IOException {
+
+
+        String file = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
+        long size = Files.size(Paths.get(file));
 
         // 返回完整视频资源
         if (Objects.isNull(range) || !range.startsWith("bytes=")) {
 
             return ResponseEntity.ok()
                     .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
-                    .header(HttpHeaders.CONTENT_LENGTH, "44")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(size))
                     .body(null);
         }
 
-        String file = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
-        long size = Files.size(Paths.get(file));
 
 
         long start = 0;
@@ -89,26 +90,30 @@ public class VideoController {
         }
 
         long end = 0;
-        if (size - start > videoConfig.getChunkSize() * 2048L) {
-            end = start + videoConfig.getChunkSize() * 2048L - 1;
+        if (size - start > videoConfig.getChunkSize() * videoConfig.getChunkUnit()) {
+            end = start + videoConfig.getChunkSize() * videoConfig.getChunkUnit() - 1;
         } else {
             end = size - 1;
         }
 
 
         // 得提前对视频切片，这种方式 越往后由于skip，chunk返回的越慢
-        //PartialFileResource partialFileResource = new PartialFileResource(file, start, end);
+        PartialFileResource partialFileResource = new PartialFileResource(file, start, end);
         //FileSystemResource fileSystemResource = new FileSystemResource(file + chunkNum);
-        InputStreamResource inputStreamResource = chunkService.getChunkResource();
+        //InputStreamResource inputStreamResource = chunkService.getChunkResource();
 
         // 返回部分资源
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
                 // 切片大小
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(inputStreamResource.contentLength()))
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(partialFileResource.contentLength()))
                 // bytes 切片起始偏移-切片结束偏移/资源总大小
                 .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, end, size))
-                .body(inputStreamResource);
+                .header(HttpHeaders.CONTENT_DISPOSITION,"inline; filename=\"4jPEHXdG_9209150941_uhd.mp4\"")
+                //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
+                //.header(HttpHeaders.AGE,"1213706")
+                .header("Timing-Allow-Origin","*")
+                .body(partialFileResource);
 
     }
 
