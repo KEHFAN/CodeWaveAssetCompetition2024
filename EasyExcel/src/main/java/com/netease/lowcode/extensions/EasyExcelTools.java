@@ -368,7 +368,7 @@ public class EasyExcelTools {
         }
         Class<?> clazz;
         try {
-            clazz = Class.forName(request.getFullClassName());
+            clazz = Class.forName(request.getFullClassName(),false,Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e) {
             log.error("加载类失败", e);
             return ParseBigDataResponse.FAIL(String.format("加载类[%s]失败！", request.getFullClassName()), e.getMessage() + Arrays.toString(e.getStackTrace()));
@@ -418,7 +418,7 @@ public class EasyExcelTools {
         }
         Class<?> clazz;
         try {
-            clazz = Class.forName(condition.getFullClassName());
+            clazz = Class.forName(condition.getFullClassName(),false,Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e) {
             log.error("加载类失败", e);
             return ExportBigDataResponse.FAIL(String.format("加载类[%s]失败！", condition.getFullClassName()), Arrays.toString(e.getStackTrace()));
