@@ -3,9 +3,12 @@ package com.netease.lowcode.extension.video.spring.service;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
+import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
+import com.netease.lowcode.extension.video.spring.model.Video;
 import com.netease.lowcode.extension.video.spring.model.VideoInfo;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.tomcat.util.http.fileupload.util.LimitedInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class VideoService {
@@ -100,7 +107,32 @@ public class VideoService {
         return JSONObject.parseObject(sb.toString(), VideoInfo.class);
     }
 
-    public InputStreamResource getVideo(long start,long end) {
-        return null;
+    public Video getVideo(String key, long start, long end) throws IOException {
+        VideoInfo videoInfo = getVideoInfo(key);
+        Collections.sort(videoInfo.getSlice());
+
+        Video video = new Video();
+        video.setStart(start);
+
+        for (Long offset : videoInfo.getSlice()) {
+            if (start < offset) {
+                continue;
+            }
+            // 计算该chunk可读取字节
+            long chunkEndOff = offset + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
+
+            // 假设chunk剩余字节为left
+            // 1. end-start > left , return left,修改end
+            // 2. end-start <=left , return end-start
+            if (end > chunkEndOff) {
+                end = chunkEndOff;
+            }
+            video.setEnd(end);
+            PartialFileResource partialFileResource = new PartialFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), start, end);
+            video.setResource(partialFileResource);
+            return video;
+        }
+
+        throw new RuntimeException("视频资源读取异常");
     }
 }

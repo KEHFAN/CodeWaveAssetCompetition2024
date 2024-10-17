@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
 import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
+import com.netease.lowcode.extension.video.spring.model.Video;
 import com.netease.lowcode.extension.video.spring.model.VideoInfo;
 import com.netease.lowcode.extension.video.spring.service.VideoService;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
@@ -80,19 +81,19 @@ public class VideoController {
             end = size - 1;
         }
 
-        InputStreamResource inputStreamResource = videoService.getVideo(start, end);
+        Video video = videoService.getVideo(key, start, end);
 
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
                 // 切片大小
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(inputStreamResource.contentLength()))
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(video.getResource().contentLength()))
                 // bytes 切片起始偏移-切片结束偏移/资源总大小
-                .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, end, size))
+                .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, video.getEnd(), size))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"4jPEHXdG_9209150941_uhd.mp4\"")
                 //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
                 //.header(HttpHeaders.AGE,"1213706")
                 .header("Timing-Allow-Origin", "*")
-                .body(inputStreamResource);
+                .body(video.getResource());
     }
 
     @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
@@ -133,8 +134,6 @@ public class VideoController {
 
         // 得提前对视频切片，这种方式 越往后由于skip，chunk返回的越慢
         PartialFileResource partialFileResource = new PartialFileResource(file, start, end);
-        //FileSystemResource fileSystemResource = new FileSystemResource(file + chunkNum);
-        //InputStreamResource inputStreamResource = chunkService.getChunkResource();
 
         // 返回部分资源
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
