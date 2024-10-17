@@ -21,15 +21,16 @@ public class VideoConfig {
             @Environment(type = EnvironmentType.ONLINE, value = "")
     })
     public Long chunkSize;
-    public Long chunkUnit = 2048L;
+    public Integer chunkUnit = 2048;
+    public Integer randomStringLen = 10;
 
     /**
      * chunk文件存储根目录
      */
     @Value("${baseDir}")
     @NaslConfiguration(defaultValue = {
-            @Environment(type = EnvironmentType.DEV, value = ""),
-            @Environment(type = EnvironmentType.ONLINE, value = "")
+            @Environment(type = EnvironmentType.DEV, value = "/data"),
+            @Environment(type = EnvironmentType.ONLINE, value = "/data")
     })
     public String baseDir;
 
@@ -57,11 +58,19 @@ public class VideoConfig {
         this.baseDir = baseDir;
     }
 
-    public Long getChunkUnit() {
+    public int getChunkUnit() {
         return chunkUnit;
     }
 
-    public void setChunkUnit(Long chunkUnit) {
+    public void setChunkUnit(Integer chunkUnit) {
         this.chunkUnit = chunkUnit;
+    }
+
+    public Integer getRandomStringLen() {
+        return randomStringLen;
+    }
+
+    public void setRandomStringLen(Integer randomStringLen) {
+        this.randomStringLen = randomStringLen;
     }
 }

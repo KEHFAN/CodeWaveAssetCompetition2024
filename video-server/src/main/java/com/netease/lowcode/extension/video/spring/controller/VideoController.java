@@ -1,11 +1,13 @@
 package com.netease.lowcode.extension.video.spring.controller;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
 import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
 import com.netease.lowcode.extension.video.spring.service.ChunkService;
+import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -29,38 +29,77 @@ public class VideoController {
     @Autowired
     private ChunkService chunkService;
 
-    @GetMapping("/rest/chunk")
-    public ResponseEntity<String> chunk() throws IOException {
-        String file = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
-        String fileChunk = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4.chunk\\";
 
-        FileInputStream inputStream = new FileInputStream(file);
-        FileOutputStream outputStream = new FileOutputStream(fileChunk + "0");
-        int read;
-        // 以2048为一个单位，chunk必须是其整数倍
-        byte[] buffer = new byte[2048];
+    @GetMapping("/rest/video/slice")
+    public ResponseEntity<String> sliceVideo(HttpServletRequest request) throws IOException {
 
-        int count = 0, chunkCount = 0;
-        while ((read = inputStream.read(buffer, 0, buffer.length)) != -1) {
-            // 写在同一个chunk
-            if (count < videoConfig.getChunkSize()) {
-                outputStream.write(buffer, 0, read);
-                count++;
-            }
-            // 写入下一个chunk
-            else {
-                count = 0;
-                chunkCount++;
-
-                outputStream.flush();
-                outputStream.close();
-
-                // 创建下一个chunk
-                outputStream = new FileOutputStream(fileChunk + chunkCount);
-            }
+        // 创建目录
+        File baseDir = new File(videoConfig.getBaseDir());
+        if (!baseDir.exists() || !baseDir.isDirectory()) {
+            baseDir.mkdirs();
+        }
+        // 存放切片目录
+        File sliceDir = new File(baseDir, "/slice");
+        if (!sliceDir.exists() || !sliceDir.isDirectory()) {
+            sliceDir.mkdirs();
         }
 
-        return ResponseEntity.ok().build();
+        JSONObject jsonObject = new JSONObject();
+
+        // 获取原视频
+        String videoPath = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
+        jsonObject.put("fileSize", Files.size(Paths.get(videoPath)));
+        jsonObject.put("filename", FilenameUtils.getName(videoPath));
+        jsonObject.put("chunkUnit", videoConfig.getChunkUnit());
+        jsonObject.put("chunkSize", videoConfig.getChunkSize());
+
+        String generator = StringGenerator.generator(videoConfig.getRandomStringLen());
+        String key = generator + "_" + System.currentTimeMillis() + "." + FilenameUtils.getExtension(videoPath);
+        jsonObject.put("key", key);
+
+        // 对视频进行切片
+        FileInputStream fis = new FileInputStream(videoPath);
+        File videoSliceDir = new File(sliceDir, key);
+        if (videoSliceDir.exists()) {
+            videoSliceDir.delete();
+        }
+        videoSliceDir.mkdirs();
+
+        JSONArray sliceArray = new JSONArray();
+        jsonObject.put("slice", sliceArray);
+        // 切片名称为 range 起始offset
+        FileOutputStream outputStream = new FileOutputStream(new File(videoSliceDir, "0"));
+        sliceArray.add(0);
+
+        int read, count = 0, chunkCount = 0;
+        byte[] buffer = new byte[videoConfig.getChunkUnit()];
+        while ((read = fis.read(buffer, 0, buffer.length)) != -1) {
+            // 写入下一个chunk
+            if (count >= videoConfig.getChunkSize()) {
+                count = 0;
+                chunkCount++;
+                outputStream.flush();
+                outputStream.close();
+                long chunkLen = chunkCount * videoConfig.getChunkUnit() * videoConfig.getChunkSize();
+                outputStream = new FileOutputStream(new File(videoSliceDir, String.valueOf(chunkLen)));
+                sliceArray.add(chunkLen);
+            }
+            // 写在同一个chunk
+            outputStream.write(buffer, 0, read);
+            count++;
+        }
+
+        // 写入配置文件
+        BufferedWriter writer = new BufferedWriter(new FileWriter(sliceDir + "/" + key + ".json"));
+        writer.write(jsonObject.toJSONString());
+        writer.flush();
+        writer.close();
+
+        return ResponseEntity.ok()
+                .body(
+                        request.getScheme() + "://" +
+                                request.getServerName() + ":" + request.getServerPort() +
+                                "/rest/video/get/" + key);
     }
 
     @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
