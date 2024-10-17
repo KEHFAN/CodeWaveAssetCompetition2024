@@ -115,7 +115,7 @@ public class VideoService {
         video.setStart(start);
 
         for (Long offset : videoInfo.getSlice()) {
-            if (start < offset) {
+            if (start - offset + 1 > videoInfo.getChunkUnit() * videoInfo.getChunkSize()) {
                 continue;
             }
             // 计算该chunk可读取字节

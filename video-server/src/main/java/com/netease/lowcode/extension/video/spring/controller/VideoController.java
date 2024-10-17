@@ -75,8 +75,8 @@ public class VideoController {
             start = Long.valueOf(split[0]);
         }
         long end = 0;
-        if (size - start > videoConfig.getChunkSize() * videoConfig.getChunkUnit()) {
-            end = start + videoConfig.getChunkSize() * videoConfig.getChunkUnit() - 1;
+        if (size - start > videoInfo.getChunkSize() * videoInfo.getChunkUnit()) {
+            end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
         } else {
             end = size - 1;
         }
@@ -89,7 +89,7 @@ public class VideoController {
                 .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(video.getResource().contentLength()))
                 // bytes 切片起始偏移-切片结束偏移/资源总大小
                 .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, video.getEnd(), size))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"4jPEHXdG_9209150941_uhd.mp4\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + key + "\"")
                 //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
                 //.header(HttpHeaders.AGE,"1213706")
                 .header("Timing-Allow-Origin", "*")
@@ -97,8 +97,8 @@ public class VideoController {
     }
 
     @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
-    @GetMapping("/rest/video/gefft/{key}")
-    public ResponseEntity<Resource> getVideo2222(@RequestHeader(value = "Range", required = false) String range,
+    @GetMapping("/rest/video/get0/{key}")
+    public ResponseEntity<Resource> getVideo0(@RequestHeader(value = "Range", required = false) String range,
                                              @PathVariable String key) throws IOException {
 
         videoService.initDir();
