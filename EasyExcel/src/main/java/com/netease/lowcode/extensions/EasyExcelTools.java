@@ -657,7 +657,7 @@ public class EasyExcelTools {
             String path = String.join("/", "data", String.valueOf(System.currentTimeMillis()));
             File dir = new File(path);
             if (!dir.mkdirs()) {
-                return ExportBigDataResponse.FAIL(String.format("创建目录失败:%s", path));
+                return ExportBigDataResponse.FAIL2(String.format("创建目录失败:%s", path),condition.getCustomQueryCondition());
             }
 
             exportFile = new File(path, fileName);
@@ -737,10 +737,11 @@ public class EasyExcelTools {
             // 文件上传
             UploadResponseDTO uploadResponseDTO = fileUtils.uploadFileV2(exportFile);
 
-            return ExportBigDataResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult(), (double) (System.currentTimeMillis() - start) / 1000, (double) exportFile.length());
+            return ExportBigDataResponse.OK(uploadResponseDTO.getFilePath(), uploadResponseDTO.getResult(), (double) (System.currentTimeMillis() - start) / 1000, (double) exportFile.length(),
+                    condition.getCustomQueryCondition());
         } catch (Throwable throwable) {
             log.error("创建excel出错", throwable);
-            return ExportBigDataResponse.FAIL("创建excel出错," + throwable.getMessage(), Arrays.toString(throwable.getStackTrace()));
+            return ExportBigDataResponse.FAIL("创建excel出错," + throwable.getMessage(), Arrays.toString(throwable.getStackTrace()), condition.getCustomQueryCondition());
         } finally {
             // 删除文件
             if (Objects.nonNull(exportFile)) {
