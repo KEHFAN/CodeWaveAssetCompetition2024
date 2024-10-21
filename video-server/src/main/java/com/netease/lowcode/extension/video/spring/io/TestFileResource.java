@@ -5,22 +5,26 @@ import org.springframework.core.io.FileSystemResource;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PartialFileResource extends FileSystemResource {
+public class TestFileResource extends FileSystemResource {
+
     private long start;
     private long end;
+    // 分片起始偏移量
+    private long offset;
 
-    public PartialFileResource(String path, long start, long end) {
+    public TestFileResource(String path,long offset, long start, long end) {
         super(path);
         this.start = start;
         this.end = end;
+        this.offset = offset;
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
         InputStream inputStream = super.getInputStream();
         // 每次返回新的文件流，都会从文件开头开始，因此需要跳过部分字节。
-        inputStream.skip(start);
-        return new PartialInputStream(inputStream, start, end);
+        inputStream.skip(start - offset);
+        return new PartialInputStream(inputStream, start - offset, end - offset);
     }
 
     @Override

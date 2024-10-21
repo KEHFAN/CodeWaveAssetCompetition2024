@@ -77,14 +77,9 @@ public class VideoController {
                 // 暂时不做校验
                 start = Long.valueOf(split[0]);
             }
-            long end = 0;
-            if (size - start > videoInfo.getChunkSize() * videoInfo.getChunkUnit()) {
-                end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
-            } else {
-                end = size - 1;
-            }
 
-            video = videoService.getVideo(key, start, end);
+
+            video = videoService.getVideo(key, start);
 
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                     .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
 import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
+import com.netease.lowcode.extension.video.spring.io.TestFileResource;
 import com.netease.lowcode.extension.video.spring.model.Video;
 import com.netease.lowcode.extension.video.spring.model.VideoInfo;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
@@ -107,7 +108,7 @@ public class VideoService {
         return JSONObject.parseObject(sb.toString(), VideoInfo.class);
     }
 
-    public Video getVideo(String key, long start, long end) throws IOException {
+    public Video getVideo(String key, long start) throws IOException {
         VideoInfo videoInfo = getVideoInfo(key);
         Collections.sort(videoInfo.getSlice());
 
@@ -118,21 +119,37 @@ public class VideoService {
             if (start - offset + 1 > videoInfo.getChunkUnit() * videoInfo.getChunkSize()) {
                 continue;
             }
-            // 计算该chunk可读取字节
+            // 计算该chunk结束偏移量
             long chunkEndOff = offset + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
 
-            // 假设chunk剩余字节为left
-            // 1. end-start > left , return left,修改end
-            // 2. end-start <=left , return end-start
-            if (end > chunkEndOff) {
-                end = chunkEndOff;
-            }
-            video.setEnd(end);
-            PartialFileResource partialFileResource = new PartialFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), start, end);
+            // 不允许跨分片加载
+            video.setEnd(chunkEndOff);
+
+            //PartialFileResource partialFileResource = new PartialFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), start, end);
+            TestFileResource partialFileResource = new TestFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), offset, start, chunkEndOff);
             video.setResource(partialFileResource);
             return video;
         }
 
         throw new RuntimeException("视频资源读取异常");
     }
+
+    /**
+     * // 不允许跨分片加载
+     *             long end;
+     *             if (size - start > videoInfo.getChunkSize() * videoInfo.getChunkUnit()) {
+     *                 // 读取范围超过一个分片的大小，将end设置为对应分片的结束偏移量
+     *                 end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
+     *             } else {
+     *                 // 读取范围在一个分片之内
+     *                 // 1. 如果start位于最后一个分片，设置end=size-1
+     *                 // 2. 如果不是最后一个分片，设置end为该分片的结束偏移量
+     *                 Long lastChunk = videoInfo.getSlice().get(videoInfo.getSlice().size() - 1);
+     *                 if (start >= lastChunk) {
+     *                     end = size - 1;
+     *                 } else {
+     *                     end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
+     *                 }
+     *             }
+     */
 }
