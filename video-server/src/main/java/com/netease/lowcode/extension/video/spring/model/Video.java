@@ -1,7 +1,6 @@
 package com.netease.lowcode.extension.video.spring.model;
 
-import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
-import com.netease.lowcode.extension.video.spring.io.TestFileResource;
+import com.netease.lowcode.extension.video.spring.io.SequenceFileResource;
 
 public class Video {
 
@@ -9,7 +8,7 @@ public class Video {
     private long end;
     private long size;
 //    private PartialFileResource resource;
-    private TestFileResource resource;
+    private SequenceFileResource resource;
 
     public long getStart() {
         return start;
@@ -44,11 +43,11 @@ public class Video {
 //    }
 
 
-    public TestFileResource getResource() {
+    public SequenceFileResource getResource() {
         return resource;
     }
 
-    public void setResource(TestFileResource resource) {
+    public void setResource(SequenceFileResource resource) {
         this.resource = resource;
     }
 }

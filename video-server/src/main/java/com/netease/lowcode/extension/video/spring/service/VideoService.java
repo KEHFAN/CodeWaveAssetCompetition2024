@@ -3,24 +3,18 @@ package com.netease.lowcode.extension.video.spring.service;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.netease.lowcode.extension.video.spring.config.VideoConfig;
-import com.netease.lowcode.extension.video.spring.io.PartialFileResource;
-import com.netease.lowcode.extension.video.spring.io.TestFileResource;
+import com.netease.lowcode.extension.video.spring.io.SequenceFileResource;
 import com.netease.lowcode.extension.video.spring.model.Video;
 import com.netease.lowcode.extension.video.spring.model.VideoInfo;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tomcat.util.http.fileupload.util.LimitedInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class VideoService {
@@ -125,31 +119,11 @@ public class VideoService {
             // 不允许跨分片加载
             video.setEnd(chunkEndOff);
 
-            //PartialFileResource partialFileResource = new PartialFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), start, end);
-            TestFileResource partialFileResource = new TestFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), offset, start, chunkEndOff);
+            SequenceFileResource partialFileResource = new SequenceFileResource(String.join("/", sliceDir, key, String.valueOf(offset)), offset, start, chunkEndOff);
             video.setResource(partialFileResource);
             return video;
         }
 
         throw new RuntimeException("视频资源读取异常");
     }
-
-    /**
-     * // 不允许跨分片加载
-     *             long end;
-     *             if (size - start > videoInfo.getChunkSize() * videoInfo.getChunkUnit()) {
-     *                 // 读取范围超过一个分片的大小，将end设置为对应分片的结束偏移量
-     *                 end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
-     *             } else {
-     *                 // 读取范围在一个分片之内
-     *                 // 1. 如果start位于最后一个分片，设置end=size-1
-     *                 // 2. 如果不是最后一个分片，设置end为该分片的结束偏移量
-     *                 Long lastChunk = videoInfo.getSlice().get(videoInfo.getSlice().size() - 1);
-     *                 if (start >= lastChunk) {
-     *                     end = size - 1;
-     *                 } else {
-     *                     end = start + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
-     *                 }
-     *             }
-     */
 }

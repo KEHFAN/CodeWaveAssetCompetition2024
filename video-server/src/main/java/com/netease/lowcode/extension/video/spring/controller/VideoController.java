@@ -50,51 +50,46 @@ public class VideoController {
 
     @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
     @GetMapping("/rest/video/get/{key}")
-    public ResponseEntity<Resource> getVideo(HttpServletResponse httpServletResponse, @RequestHeader(value = "Range", required = false) String range,
+    public ResponseEntity<Resource> getVideo(@RequestHeader(value = "Range", required = false) String range,
                                              @PathVariable String key) throws IOException {
 
-        Video video = null;
-        try {
-            videoService.initDir();
+        videoService.initDir();
 
-            // 读取视频配置
-            VideoInfo videoInfo = videoService.getVideoInfo(key);
-            long size = videoInfo.getFileSize();
+        // 读取视频配置
+        VideoInfo videoInfo = videoService.getVideoInfo(key);
+        long size = videoInfo.getFileSize();
 
-            // 返回完整视频资源
-            if (Objects.isNull(range) || !range.startsWith("bytes=")) {
+        // 返回完整视频资源
+        if (Objects.isNull(range) || !range.startsWith("bytes=")) {
 
-                return ResponseEntity.ok()
-                        .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
-                        .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(size))
-                        .body(null);
-            }
-
-
-            long start = 0;
-            String[] split = range.substring(6).split("-");
-            if (split.length > 0) {
-                // 暂时不做校验
-                start = Long.valueOf(split[0]);
-            }
-
-
-            video = videoService.getVideo(key, start);
-
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+            return ResponseEntity.ok()
                     .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
-                    // 切片大小
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(video.getResource().contentLength()))
-                    // bytes 切片起始偏移-切片结束偏移/资源总大小
-                    .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, video.getEnd(), size))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + key + "\"")
-                    //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
-                    //.header(HttpHeaders.AGE,"1213706")
-                    .header("Timing-Allow-Origin", "*")
-                    .body(video.getResource());
-        } finally {
-
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(size))
+                    .body(null);
         }
+
+
+        long start = 0;
+        String[] split = range.substring(6).split("-");
+        if (split.length > 0) {
+            // 暂时不做校验
+            start = Long.valueOf(split[0]);
+        }
+
+
+        Video video = videoService.getVideo(key, start);
+
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                .contentType(MediaType.valueOf("video/mp4; charset=UTF-8"))
+                // 切片大小
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(video.getResource().contentLength()))
+                // bytes 切片起始偏移-切片结束偏移/资源总大小
+                .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, video.getEnd(), size))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + key + "\"")
+                //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
+                //.header(HttpHeaders.AGE,"1213706")
+                .header("Timing-Allow-Origin", "*")
+                .body(video.getResource());
     }
 
     @CrossOrigin(allowCredentials = "true",methods = {RequestMethod.GET},origins = "*")
@@ -104,7 +99,7 @@ public class VideoController {
 
         videoService.initDir();
 
-        String file = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
+        String file = String.join("/", videoConfig.getBaseDir(), "origin", key);
         long size = Files.size(Paths.get(file));
 
         // 返回完整视频资源
@@ -143,7 +138,7 @@ public class VideoController {
                 .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(partialFileResource.contentLength()))
                 // bytes 切片起始偏移-切片结束偏移/资源总大小
                 .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %s-%s/%s", start, end, size))
-                .header(HttpHeaders.CONTENT_DISPOSITION,"inline; filename=\"4jPEHXdG_9209150941_uhd.mp4\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,"inline; filename=\"" + key + "\"")
                 //.header(HttpHeaders.CACHE_CONTROL,"max-age=2592000")
                 //.header(HttpHeaders.AGE,"1213706")
                 .header("Timing-Allow-Origin","*")
