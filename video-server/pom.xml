@@ -6,7 +6,7 @@
 
     <groupId>com.netease.lowcode.extension</groupId>
     <artifactId>video-server</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>
         提供视频加速服务
     </description>
@@ -109,6 +109,5 @@
                 </executions>
             </plugin>
         </plugins>
-        <directory>C:\Users\fankehu\Downloads\videotest_source\视频播放优化(videotest)\dependency</directory>
     </build>
 </project>

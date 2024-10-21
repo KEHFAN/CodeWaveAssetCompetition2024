@@ -126,6 +126,10 @@ public class VideoService {
             }
             // 计算该chunk结束偏移量
             long chunkEndOff = offset + videoInfo.getChunkSize() * videoInfo.getChunkUnit() - 1;
+            // 判断是否为最后一片
+            if (chunkEndOff >= videoInfo.getFileSize()) {
+                chunkEndOff = videoInfo.getFileSize() - 1;
+            }
 
             // 不允许跨分片加载
             video.setEnd(chunkEndOff);
