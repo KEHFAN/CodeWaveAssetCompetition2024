@@ -6,6 +6,7 @@ import com.netease.lowcode.extension.video.spring.config.VideoConfig;
 import com.netease.lowcode.extension.video.spring.io.SequenceFileResource;
 import com.netease.lowcode.extension.video.spring.model.Video;
 import com.netease.lowcode.extension.video.spring.model.VideoInfo;
+import com.netease.lowcode.extension.video.spring.utils.FileUtil;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class VideoService {
     private VideoConfig videoConfig;
 
     private String sliceDir;
+    private String originDir;
 
     public void initDir() {
         // 创建目录
@@ -35,13 +37,22 @@ public class VideoService {
             sliceDir.mkdirs();
         }
         this.sliceDir = sliceDir.getPath();
+        // 存放原始视频
+        File originDir = new File(baseDir, "/origin");
+        if(!originDir.exists() || !originDir.isDirectory()) {
+            originDir.mkdirs();
+        }
+        this.originDir = originDir.getPath();
     }
 
-    public String sliceVideo() throws IOException {
+    public String sliceVideo(String url,String filename) throws IOException {
+
+        FileUtil.saveFile(url, String.join("/", originDir, filename));
+
         JSONObject jsonObject = new JSONObject();
 
         // 获取原视频
-        String videoPath = "C:\\Users\\fankehu\\Pictures\\4jPEHXdG_9209150941_uhd.mp4";
+        String videoPath = String.join("/", originDir, filename);
         jsonObject.put("fileSize", Files.size(Paths.get(videoPath)));
         jsonObject.put("filename", FilenameUtils.getName(videoPath));
         jsonObject.put("chunkUnit", videoConfig.getChunkUnit());

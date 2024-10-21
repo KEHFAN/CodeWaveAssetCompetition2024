@@ -7,7 +7,6 @@ public class Video {
     private long start;
     private long end;
     private long size;
-//    private PartialFileResource resource;
     private SequenceFileResource resource;
 
     public long getStart() {
@@ -33,15 +32,6 @@ public class Video {
     public void setSize(long size) {
         this.size = size;
     }
-
-//    public PartialFileResource getResource() {
-//        return resource;
-//    }
-//
-//    public void setResource(PartialFileResource resource) {
-//        this.resource = resource;
-//    }
-
 
     public SequenceFileResource getResource() {
         return resource;

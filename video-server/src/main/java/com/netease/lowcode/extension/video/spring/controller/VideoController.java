@@ -34,12 +34,12 @@ public class VideoController {
     private VideoService videoService;
 
 
-    @GetMapping("/rest/video/slice")
+    //@GetMapping("/rest/video/slice")
     public ResponseEntity<String> sliceVideo(HttpServletRequest request) throws IOException {
 
         videoService.initDir();
 
-        String key = videoService.sliceVideo();
+        String key = videoService.sliceVideo("","");
 
         return ResponseEntity.ok()
                 .body(
