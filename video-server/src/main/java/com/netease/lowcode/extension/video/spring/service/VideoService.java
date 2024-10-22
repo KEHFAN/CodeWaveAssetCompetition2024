@@ -10,6 +10,7 @@ import com.netease.lowcode.extension.video.spring.utils.FileUtil;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -17,9 +18,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-@Service
+@Service("library-video_service")
 public class VideoService {
     @Autowired
+    @Qualifier("library-video_config")
     private VideoConfig videoConfig;
 
     private String sliceDir;

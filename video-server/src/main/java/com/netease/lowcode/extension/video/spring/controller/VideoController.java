@@ -10,6 +10,7 @@ import com.netease.lowcode.extension.video.spring.service.VideoService;
 import com.netease.lowcode.extension.video.spring.utils.StringGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -25,12 +26,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-@RestController
+@RestController("library-video_controller")
 public class VideoController {
 
     @Autowired
+    @Qualifier("library-video_config")
     private VideoConfig videoConfig;
     @Autowired
+    @Qualifier("library-video_service")
     private VideoService videoService;
 
 

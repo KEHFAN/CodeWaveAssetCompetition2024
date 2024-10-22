@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
+@Component("library-video_config")
 public class VideoConfig {
 
     /**
