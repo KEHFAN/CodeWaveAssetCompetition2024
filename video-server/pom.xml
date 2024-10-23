@@ -6,7 +6,7 @@
 
     <groupId>com.netease.lowcode.extension</groupId>
     <artifactId>video-server</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.6</version>
     <description>
         提供视频加速服务
     </description>
