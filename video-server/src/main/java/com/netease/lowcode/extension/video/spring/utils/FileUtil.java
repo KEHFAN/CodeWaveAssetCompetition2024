@@ -7,6 +7,9 @@ import java.net.URL;
 public class FileUtil {
 
     public static InputStream getFileInputStream(String urlStr) throws IOException {
+        // TODO：url中包含中文，可能会400错误，需要对url进行编码处理
+        // 目前 低版本ide 生成的url 包含中文
+        //     高版本ide 文件名放到的query参数中，不会有影响
         URL url = new URL(urlStr);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(3 * 1000);
