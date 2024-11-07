@@ -183,10 +183,24 @@ public class Excel2Pdf {
                     byte underline = font.getUnderline();
 
 
+                    paragraph.put("elements", new JSONArray());
+                    // 读取单元格超链接
+                    Hyperlink hyperlink = cell.getHyperlink();
+                    if (Objects.nonNull(hyperlink)) {
+                        JSONArray array = paragraph.getJSONArray("elements");
+                        JSONObject link = new JSONObject();
+                        array.add(link);
+                        link.put("type", "Link");
+                        link.put("text", cell.getStringCellValue());
+                        link.put("uri", hyperlink.getAddress());
+                    }
                     // 单元格类型
                     CellType cellType = cell.getCellType();
                     if (CellType.STRING.equals(cellType)) {
                         paragraph.put("text", cell.getStringCellValue());
+                        if (Objects.nonNull(hyperlink)) {
+                            paragraph.put("text", "");
+                        }
                     } else if (CellType.FORMULA.equals(cellType)) {
                         String cellFormula = cell.getCellFormula();
                         CellValue evaluate = wb.getCreationHelper().createFormulaEvaluator().evaluate(cell);
@@ -196,8 +210,7 @@ public class Excel2Pdf {
                             if (StringUtils.startsWith(stringValue, "base64,img,")) {
 
                                 // TODO: 把图片base64编码写入即可
-                                JSONArray array = new JSONArray();
-                                paragraph.put("elements", array);
+                                JSONArray array = paragraph.getJSONArray("elements");
                                 JSONObject image = new JSONObject();
                                 array.add(image);
                                 image.put("type", "Image");

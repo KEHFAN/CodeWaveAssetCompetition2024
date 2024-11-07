@@ -218,6 +218,15 @@ public class FileUtils {
         }
 
         String fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1, urlStr.indexOf("?") == -1 ? urlStr.length() : urlStr.indexOf("?"));
+        if (StringUtils.isBlank(fileName) && StringUtils.isNotBlank(url.getQuery())) {
+            for (String kv : url.getQuery().split("&")) {
+                String[] pair = kv.split("=");
+                if (StringUtils.equals(pair[0], "fileName")) {
+                    fileName = pair[1];
+                    break;
+                }
+            }
+        }
         File file = new File(saveDir + File.separator + fileName);
         if (file.exists()) file.delete();
         FileOutputStream fos = new FileOutputStream(file);

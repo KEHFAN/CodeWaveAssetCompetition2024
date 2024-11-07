@@ -84,7 +84,7 @@ public class Excel2PdfTest {
         Excel2Pdf.xlsx2pdf(request);
     }
 
-    public static void main(String[] args) {
+    public static void main5(String[] args) {
         String jsonData = "{\n" +
                 "\t\"nameB\": \"浙江来福谐波传动股份有限公司\",\n" +
                 "\t\"addressB\": \"我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址\",\n" +
@@ -2218,9 +2218,9 @@ public class Excel2PdfTest {
         PdfGenerator.createPDFV2ByStr(jsonData,template);
     }
 
-    public static void main6(String[] args) {
+    public static void main(String[] args) {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
-        request.setTemplateUrl("https://dev-upload21-kehfan.app.codewave.163.com:443/upload/app/f3bd57d5-3205-4424-9ae6-f8e519318f2b/图片测试_20240923150448346.xlsx");
+        request.setTemplateUrl("https://dev-suportlink-cstest.lcap.codewave-test.163yun.com:443/upload/?fileName=test.xlsx&fut=1730973302161&ai=5a2d02a7-53c8-4cee-9ca9-1dd341dcfff4&con=lcap_default_connection");
         request.setLastRowNum(3);
         request.setLastColLabel("C");
         request.setExportFileName("测试测试.pdf");
