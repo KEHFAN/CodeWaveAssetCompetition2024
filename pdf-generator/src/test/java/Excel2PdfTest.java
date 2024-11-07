@@ -84,7 +84,7 @@ public class Excel2PdfTest {
         Excel2Pdf.xlsx2pdf(request);
     }
 
-    public static void main5(String[] args) {
+    public static void main(String[] args) {
         String jsonData = "{\n" +
                 "\t\"nameB\": \"浙江来福谐波传动股份有限公司\",\n" +
                 "\t\"addressB\": \"我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址我也不知道就乱天一通的地址\",\n" +
@@ -119,7 +119,7 @@ public class Excel2PdfTest {
                 "\t\"emailA\": \"wb.sunzhaohao01@mesg.corp.netease.com\"\n" +
                 "}";
         String template = "{\n" +
-                "\t\"fileName\": \"导出订单【XZY240902038】.pdf\",\n" +
+                "\t\"fileName\": \"导出订单【】.pdf\",\n" +
                 "\t\"pageSize\": \"A4\",\n" +
                 "\t\"rotate\": false,\n" +
                 "\t\"nodes\": [{\n" +
@@ -2218,7 +2218,7 @@ public class Excel2PdfTest {
         PdfGenerator.createPDFV2ByStr(jsonData,template);
     }
 
-    public static void main(String[] args) {
+    public static void main6(String[] args) {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
         request.setTemplateUrl("https://dev-upload21-kehfan.app.codewave.163.com:443/upload/app/f3bd57d5-3205-4424-9ae6-f8e519318f2b/图片测试_20240923150448346.xlsx");
         request.setLastRowNum(3);

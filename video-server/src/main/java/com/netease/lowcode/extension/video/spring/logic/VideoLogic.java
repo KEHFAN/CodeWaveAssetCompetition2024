@@ -19,6 +19,7 @@ public class VideoLogic {
 
     @NaslLogic
     public static Response sliceVideo(String videoUrl,String filename) throws IOException {
+        // TODO： 异步处理
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         videoService.initDir();
