@@ -5,12 +5,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.forms.fields.properties.CheckBoxType;
 import com.itextpdf.forms.form.element.CheckBox;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.colors.CalRgb;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfName;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
@@ -30,7 +31,6 @@ import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -135,6 +135,10 @@ public class NodeCreator {
         Link link = new Link(jsonObject.getString("text"), PdfAction.createURI(
                 jsonObject.getString("uri")
         ));
+
+        // 去除默认边框
+        link.getLinkAnnotation().setBorderStyle(PdfName.N);
+
         return link;
     }
 

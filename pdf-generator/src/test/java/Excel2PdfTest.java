@@ -2220,7 +2220,7 @@ public class Excel2PdfTest {
 
     public static void main(String[] args) {
         CreateByXlsxRequest request = new CreateByXlsxRequest();
-        request.setTemplateUrl("https://dev-suportlink-cstest.lcap.codewave-test.163yun.com:443/upload/?fileName=test.xlsx&fut=1730973302161&ai=5a2d02a7-53c8-4cee-9ca9-1dd341dcfff4&con=lcap_default_connection");
+        request.setTemplateUrl("https://dev-suportlink-cstest.lcap.codewave-test.163yun.com:443/upload/?fileName=test.xlsx&fut=1730974484369&ai=5a2d02a7-53c8-4cee-9ca9-1dd341dcfff4&con=lcap_default_connection");
         request.setLastRowNum(3);
         request.setLastColLabel("C");
         request.setExportFileName("测试测试.pdf");
