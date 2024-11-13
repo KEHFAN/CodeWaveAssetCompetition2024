@@ -184,23 +184,10 @@ public class Excel2Pdf {
 
 
                     paragraph.put("elements", new JSONArray());
-                    // 读取单元格超链接
-                    Hyperlink hyperlink = cell.getHyperlink();
-                    if (Objects.nonNull(hyperlink)) {
-                        JSONArray array = paragraph.getJSONArray("elements");
-                        JSONObject link = new JSONObject();
-                        array.add(link);
-                        link.put("type", "Link");
-                        link.put("text", cell.getStringCellValue());
-                        link.put("uri", hyperlink.getAddress());
-                    }
                     // 单元格类型
                     CellType cellType = cell.getCellType();
                     if (CellType.STRING.equals(cellType)) {
                         paragraph.put("text", cell.getStringCellValue());
-                        if (Objects.nonNull(hyperlink)) {
-                            paragraph.put("text", "");
-                        }
                     } else if (CellType.FORMULA.equals(cellType)) {
                         String cellFormula = cell.getCellFormula();
                         CellValue evaluate = wb.getCreationHelper().createFormulaEvaluator().evaluate(cell);
@@ -380,7 +367,9 @@ public class Excel2Pdf {
                 }
             }
 
-            // 处理freemarker list
+            // TODO: 处理常规变量超链接
+
+            // 处理freemarker list (包含超链接)
             logger.info("开始填充freemarker list标签");
             handleFreemarkerList(tmpCells,request.getJsonData());
             logger.info("freemarker list 标签解析填充完毕");
@@ -440,6 +429,7 @@ public class Excel2Pdf {
             boolean hasFreemarkerListTag = false;
             for (int j = 0; j < originRow.size(); j++) {
                 JSONObject originCell = originRow.get(j);
+                // 可能是paragraph.text也可能是paragraph.elements.link.text
                 if (isFreemarkerListTag(originCell)) {
                     hasFreemarkerListTag = true;
                     break;

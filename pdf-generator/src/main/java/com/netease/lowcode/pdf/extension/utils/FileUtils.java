@@ -132,10 +132,10 @@ public class FileUtils {
 
     public static UploadResponseDTO uploadStreamV2(InputStream inputStream, String fileName) throws IOException {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String uploadUrl = httpServletRequest.getScheme() + "://" + "127.0.0.1:8080" + "/upload";
+        String uploadUrl = "http://" + "127.0.0.1:8080" + "/upload";
         logger.info("内部地址:{}",uploadUrl);
         // http是域名80端口，https可能是域名443 验证下，然后替换地址
-        logger.info("外部地址:{}",uploadUrl.replace("127.0.0.1:8080",httpServletRequest.getServerName()+":"+httpServletRequest.getServerPort()));
+        logger.info("外部地址:{}", uploadUrl.replace("127.0.0.1:8080", httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort()));
         byte[] fileBytes;
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int read;

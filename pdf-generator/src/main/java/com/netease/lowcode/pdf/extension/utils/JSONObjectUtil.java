@@ -29,6 +29,8 @@ public class JSONObjectUtil {
             if(Excel2Pdf.isFreemarkerListTag(originRow.get(i))){
                 String cellText = Excel2Pdf.getCellText(originRow.get(i));
                 // 获取list名称
+                // ${list.totalPrice}
+                // ${list.mName,url} 第一个属性为text，第二个属性为超链接地址
                 listName = cellText.substring(2, cellText.indexOf("."));
             }
         }
@@ -56,8 +58,15 @@ public class JSONObjectUtil {
             for (int j = 0; j < cloneRow.size(); j++) {
                 if (Excel2Pdf.isFreemarkerListTag(cloneRow.get(j))) {
                     String cellText = Excel2Pdf.getCellText(cloneRow.get(j));
-                    // 属性名
+                    // 属性名 (可能包含超链接，这里识别下)
                     String arrName = cellText.substring(cellText.indexOf(".") + 1, cellText.length() - 1);
+                    String arrLink = "";
+                    if(StringUtils.contains(arrName,",")){
+                        String[] split = arrName.split(",");
+                        arrName = split[0];
+                        arrLink = split[1];
+                    }
+                    // 判断下
                     if(StringUtils.equals(arrName,arrHasRead)){
                         // 横向分块，用下一组数据填充
                         i++;
@@ -74,7 +83,21 @@ public class JSONObjectUtil {
                     JSONObject jsonObject = requestArrayData.getJSONObject(i);
 
                     String value = jsonObject.containsKey(arrName) ? jsonObject.getString(arrName) : "";
-                    cloneRow.get(j).getJSONArray("elements").getJSONObject(0).put("text", value);
+                    if (StringUtils.isNotBlank(arrLink)) {
+                        String url = jsonObject.containsKey(arrLink) ? jsonObject.getString(arrLink) : "";
+                        cloneRow.get(j).getJSONArray("elements").getJSONObject(0).put("text", "");
+                        JSONArray paraElements = new JSONArray();
+                        cloneRow.get(j).getJSONArray("elements").getJSONObject(0).put("elements", paraElements);
+
+                        JSONObject linkObj = new JSONObject();
+                        paraElements.add(linkObj);
+                        linkObj.put("type", "Link");
+                        linkObj.put("text", value);
+                        linkObj.put("uri", url);
+                    } else {
+                        cloneRow.get(j).getJSONArray("elements").getJSONObject(0).put("text", value);
+                    }
+
 
                     if(StringUtils.isBlank(arrHasRead)){
                         arrHasRead = arrName;
