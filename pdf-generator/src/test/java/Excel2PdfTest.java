@@ -2229,7 +2229,7 @@ public class Excel2PdfTest {
         d.list.add(new E("test2","https://www.taobao.com/"));
 
         CreateByXlsxRequest request = new CreateByXlsxRequest();
-        request.setTemplateUrl("https://dev-excel2pdflinktest-kehfan.app.codewave.163.com:443/upload/?fileName=export_pdf_template_20241106.xlsx&fut=1731485885740&ai=5fcaeb4b-a695-4723-aef8-6a7190955a9d&con=lcap_default_connection");
+        request.setTemplateUrl("https://dev-excel2pdflinktest-kehfan.app.codewave.163.com:443/upload/?fileName=export_pdf_template_20241106.xlsx&fut=1731488570387&ai=5fcaeb4b-a695-4723-aef8-6a7190955a9d&con=lcap_default_connection");
         request.setLastRowNum(4);
         request.setLastColLabel("C");
         request.setExportFileName("测试测试22.pdf");
