@@ -86,14 +86,14 @@ public class FileUtils {
 
         // 组装链接
         UploadResponseDTO responseDTO = new UploadResponseDTO();
-        responseDTO.setFilePath("/upload" + filePath);
+        responseDTO.setFilePath("/upload/" + filePath);
 
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (Objects.nonNull(requestAttributes)) {
             HttpServletRequest request = requestAttributes.getRequest();
             responseDTO.setResult(request.getScheme() + "://" + request.getServerName() +
                     (80 == request.getServerPort() ? "" : ":" + request.getServerPort()) +
-                    "/upload" + filePath);
+                    "/upload/" + filePath);
         } else {
             responseDTO.setResult(responseDTO.getFilePath());
         }
