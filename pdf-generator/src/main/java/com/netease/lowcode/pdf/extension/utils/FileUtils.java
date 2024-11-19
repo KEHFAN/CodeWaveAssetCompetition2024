@@ -217,6 +217,8 @@ public class FileUtils {
             }
         }
 
+        // TODO: 使用历史版本依赖库时，不支持解析3.11文件地址，因此会将/data/template写成文件，导致后续报错。
+        // 删除pod 重新发布即可。
         String fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1, urlStr.indexOf("?") == -1 ? urlStr.length() : urlStr.indexOf("?"));
         if (StringUtils.isBlank(fileName) && StringUtils.isNotBlank(url.getQuery())) {
             for (String kv : url.getQuery().split("&")) {
