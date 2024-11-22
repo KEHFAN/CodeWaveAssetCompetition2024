@@ -36,7 +36,8 @@ public class FileUtils {
     private String sinkPath;
     @Value("${lcp.upload.access}")
     private String access;
-
+    @Autowired
+    private FileConnectorUtils pdfGeneratorFileConnectorUtils;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
@@ -57,17 +58,6 @@ public class FileUtils {
     public UploadResponseDTO uploadFileV2(File file) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, FileNotFoundException {
 
         FileInputStream fis = new FileInputStream(file);
-
-        Object clientManager = applicationContext.getBean("fileStorageClientManager");
-        Method getFileSystemSpi = clientManager.getClass().getMethod("getFileSystemSpi", String.class);
-        Object fileStorageClient = getFileSystemSpi.invoke(clientManager, sinkType);
-
-        Method upload = fileStorageClient.getClass().getMethod("upload", InputStream.class, String.class, Map.class);
-        // http://dev.exporttest.defaulttenant.lcap.codewave-dev.163yun.com/upload/app/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA%E6%B5%8B%E8%AF%95_20240106093632186.xlsx
-
-        // 只要拼接 sinkPath+fileName+时间+后缀即可。
-        String curTime = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
-
         String fileName = file.getName();
         String fileExt = "";
         if (fileName.contains(".")) {
@@ -75,6 +65,21 @@ public class FileUtils {
             fileExt = fileName.substring(i);
             fileName = fileName.substring(0, i);
         }
+        // 只要拼接 sinkPath+fileName+时间+后缀即可。
+        String curTime = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
+
+        boolean containsBean = applicationContext.containsBean("fileStorageClientManager");
+        if(!containsBean){
+            fileName = fileName + "_" + curTime + fileExt;//防止文件被覆盖，可按需选择
+            return pdfGeneratorFileConnectorUtils.Base64FileUploadV2(fis,fileName,new HashMap<>());
+        }
+
+        Object clientManager = applicationContext.getBean("fileStorageClientManager");
+        Method getFileSystemSpi = clientManager.getClass().getMethod("getFileSystemSpi", String.class);
+        Object fileStorageClient = getFileSystemSpi.invoke(clientManager, sinkType);
+
+        Method upload = fileStorageClient.getClass().getMethod("upload", InputStream.class, String.class, Map.class);
+        // http://dev.exporttest.defaulttenant.lcap.codewave-dev.163yun.com/upload/app/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA%E6%B5%8B%E8%AF%95_20240106093632186.xlsx
 
         String savePath = String.join("/", sinkPath, fileName + "_" + curTime + fileExt);
         String filePath = (String) upload.invoke(fileStorageClient, fis, savePath, new HashMap<>());
