@@ -36,7 +36,8 @@ public class FileUtils {
     private String sinkPath;
     @Value("${lcp.upload.access}")
     private String access;
-
+    @Autowired
+    private FileConnectorUtils pdfGeneratorFileConnectorUtils;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
@@ -57,17 +58,6 @@ public class FileUtils {
     public UploadResponseDTO uploadFileV2(File file) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, FileNotFoundException {
 
         FileInputStream fis = new FileInputStream(file);
-
-        Object clientManager = applicationContext.getBean("fileStorageClientManager");
-        Method getFileSystemSpi = clientManager.getClass().getMethod("getFileSystemSpi", String.class);
-        Object fileStorageClient = getFileSystemSpi.invoke(clientManager, sinkType);
-
-        Method upload = fileStorageClient.getClass().getMethod("upload", InputStream.class, String.class, Map.class);
-        // http://dev.exporttest.defaulttenant.lcap.codewave-dev.163yun.com/upload/app/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA%E6%B5%8B%E8%AF%95_20240106093632186.xlsx
-
-        // 只要拼接 sinkPath+fileName+时间+后缀即可。
-        String curTime = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
-
         String fileName = file.getName();
         String fileExt = "";
         if (fileName.contains(".")) {
@@ -75,6 +65,21 @@ public class FileUtils {
             fileExt = fileName.substring(i);
             fileName = fileName.substring(0, i);
         }
+        // 只要拼接 sinkPath+fileName+时间+后缀即可。
+        String curTime = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSS");
+
+        boolean containsBean = applicationContext.containsBean("fileStorageClientManager");
+        if(!containsBean){
+            fileName = fileName + "_" + curTime + fileExt;//防止文件被覆盖，可按需选择
+            return pdfGeneratorFileConnectorUtils.Base64FileUploadV2(fis,fileName,new HashMap<>());
+        }
+
+        Object clientManager = applicationContext.getBean("fileStorageClientManager");
+        Method getFileSystemSpi = clientManager.getClass().getMethod("getFileSystemSpi", String.class);
+        Object fileStorageClient = getFileSystemSpi.invoke(clientManager, sinkType);
+
+        Method upload = fileStorageClient.getClass().getMethod("upload", InputStream.class, String.class, Map.class);
+        // http://dev.exporttest.defaulttenant.lcap.codewave-dev.163yun.com/upload/app/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%87%BA%E6%B5%8B%E8%AF%95_20240106093632186.xlsx
 
         String savePath = String.join("/", sinkPath, fileName + "_" + curTime + fileExt);
         String filePath = (String) upload.invoke(fileStorageClient, fis, savePath, new HashMap<>());
@@ -132,10 +137,10 @@ public class FileUtils {
 
     public static UploadResponseDTO uploadStreamV2(InputStream inputStream, String fileName) throws IOException {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String uploadUrl = httpServletRequest.getScheme() + "://" + "127.0.0.1:8080" + "/upload";
+        String uploadUrl = "http://" + "127.0.0.1:8080" + "/upload";
         logger.info("内部地址:{}",uploadUrl);
         // http是域名80端口，https可能是域名443 验证下，然后替换地址
-        logger.info("外部地址:{}",uploadUrl.replace("127.0.0.1:8080",httpServletRequest.getServerName()+":"+httpServletRequest.getServerPort()));
+        logger.info("外部地址:{}", uploadUrl.replace("127.0.0.1:8080", httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort()));
         byte[] fileBytes;
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int read;
@@ -217,7 +222,18 @@ public class FileUtils {
             }
         }
 
+        // TODO: 使用历史版本依赖库时，不支持解析3.11文件地址，因此会将/data/template写成文件，导致后续报错。
+        // 删除pod 重新发布即可。
         String fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1, urlStr.indexOf("?") == -1 ? urlStr.length() : urlStr.indexOf("?"));
+        if (StringUtils.isBlank(fileName) && StringUtils.isNotBlank(url.getQuery())) {
+            for (String kv : url.getQuery().split("&")) {
+                String[] pair = kv.split("=");
+                if (StringUtils.equals(pair[0], "fileName")) {
+                    fileName = pair[1];
+                    break;
+                }
+            }
+        }
         File file = new File(saveDir + File.separator + fileName);
         if (file.exists()) file.delete();
         FileOutputStream fos = new FileOutputStream(file);

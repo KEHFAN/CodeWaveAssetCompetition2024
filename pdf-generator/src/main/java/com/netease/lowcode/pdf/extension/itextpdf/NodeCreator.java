@@ -5,13 +5,15 @@ import com.alibaba.fastjson2.JSONObject;
 import com.itextpdf.forms.fields.properties.CheckBoxType;
 import com.itextpdf.forms.form.element.CheckBox;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.colors.CalRgb;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfName;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
@@ -29,7 +31,6 @@ import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -124,6 +125,23 @@ public class NodeCreator {
         return byteArrayOutputStream;
     }
 
+    public static Link link(JSONObject jsonObject) {
+        if (Objects.isNull(jsonObject)) {
+            return null;
+        }
+        if (!jsonObject.containsKey("type")) {
+            return null;
+        }
+        Link link = new Link(jsonObject.getString("text"), PdfAction.createURI(
+                jsonObject.getString("uri")
+        ));
+
+        // 去除默认边框
+        link.getLinkAnnotation().setBorderStyle(PdfName.N);
+
+        return link;
+    }
+
     public static Paragraph paragraph(JSONObject jsonObject) {
         if(Objects.isNull(jsonObject)){
             return null;
@@ -172,9 +190,11 @@ public class NodeCreator {
         if (jsonObject.containsKey("elements")) {
             JSONArray elements = jsonObject.getJSONArray("elements");
             elements.toJavaList(JSONObject.class).forEach(obj -> {
-                if("Image".equalsIgnoreCase(obj.getString("type"))){
+                if ("Image".equalsIgnoreCase(obj.getString("type"))) {
                     paragraph.add(image(obj));
-                }else{
+                } else if ("Link".equalsIgnoreCase(obj.getString("type"))) {
+                    paragraph.add(link(obj));
+                } else {
                     paragraph.add(NodeTypeEnum.valueOf(obj.getString("type")).exec(obj));
                 }
             });

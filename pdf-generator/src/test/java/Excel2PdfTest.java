@@ -1,3 +1,4 @@
+import com.alibaba.fastjson2.JSON;
 import com.netease.lowcode.pdf.extension.Excel2Pdf;
 import com.netease.lowcode.pdf.extension.PdfGenerator;
 import com.netease.lowcode.pdf.extension.structures.BaseResponse;
@@ -8,6 +9,8 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Excel2PdfTest {
 
@@ -119,7 +122,7 @@ public class Excel2PdfTest {
                 "\t\"emailA\": \"wb.sunzhaohao01@mesg.corp.netease.com\"\n" +
                 "}";
         String template = "{\n" +
-                "\t\"fileName\": \"导出订单【XZY240902038】.pdf\",\n" +
+                "\t\"fileName\": \"导出订单【】.pdf\",\n" +
                 "\t\"pageSize\": \"A4\",\n" +
                 "\t\"rotate\": false,\n" +
                 "\t\"nodes\": [{\n" +
@@ -2219,12 +2222,42 @@ public class Excel2PdfTest {
     }
 
     public static void main(String[] args) {
+
+        D d = new D();
+        d.list = new ArrayList<>();
+        d.list.add(new E("test1","http://www.baidu.com"));
+        d.list.add(new E("test2","https://www.taobao.com/"));
+
         CreateByXlsxRequest request = new CreateByXlsxRequest();
-        request.setTemplateUrl("https://dev-upload21-kehfan.app.codewave.163.com:443/upload/app/f3bd57d5-3205-4424-9ae6-f8e519318f2b/图片测试_20240923150448346.xlsx");
-        request.setLastRowNum(3);
+        request.setTemplateUrl("https://dev-excel2pdflinktest-kehfan.app.codewave.163.com:443/upload/?fileName=export_pdf_template_20241106.xlsx&fut=1731488570387&ai=5fcaeb4b-a695-4723-aef8-6a7190955a9d&con=lcap_default_connection");
+        request.setLastRowNum(4);
         request.setLastColLabel("C");
-        request.setExportFileName("测试测试.pdf");
+        request.setExportFileName("测试测试22.pdf");
+        request.setJsonData(JSON.toJSONString(d));
         BaseResponse baseResponse = Excel2Pdf.xlsx2pdf(request);
         System.out.println();
+    }
+
+    static class D {
+        public String nameB="ss";
+        public String emailA="aa";
+        public String emailB="bb";
+        public List<E> list;
+    }
+
+    static class E {
+
+        public E() {
+
+        }
+        public E(String nName,String url) {
+            this.mName = nName;
+            this.url = url;
+        }
+
+        public String mCode = "code";
+        public String totalPrice = "0.000";
+        public String mName;
+        public String url;
     }
 }
