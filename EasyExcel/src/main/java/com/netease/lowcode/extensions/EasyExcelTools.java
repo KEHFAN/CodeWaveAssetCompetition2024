@@ -510,10 +510,9 @@ public class EasyExcelTools {
 
                 // 将json序列化的结果转为对象
 //                List<Object> data = dataStr.stream().map((item) -> JSON.parseObject(item, clazz)).collect(Collectors.toList());
-                ObjectMapper objectMapper = new ObjectMapper();
                 List<Object> data = dataStr.stream().map((item) -> {
                     try {
-                        return objectMapper.readValue(item, clazz);
+                        return JsonUtil.fromJson(item, clazz);
                     } catch (JsonProcessingException e) {
                         log.error("json转换失败", e);
                         throw new RuntimeException(e);
